@@ -1,0 +1,9 @@
+[package]
+name = "helix-test"
+version = "0.1.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+omni = { path = "../../", features = ["use_helix"] }

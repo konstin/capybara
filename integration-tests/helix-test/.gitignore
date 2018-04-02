@@ -1,0 +1,6 @@
+target
+tmp
+*.bundle
+*.so
+vendor/
+lib/

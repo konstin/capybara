@@ -1,0 +1,28 @@
+[package]
+name = "omni"
+version = "0.1.0"
+authors = ["konstin <konstin@mailbox.org>"]
+
+[features]
+use_pyo3 = ["omni-derive/use_pyo3"]
+use_helix = ["omni-derive/use_helix"]
+
+[dependencies]
+pyo3 = { path = "pyo3", features = ["extension-module"] }
+helix = { path = "helix" }
+omni-derive = { path = "omni-derive" }
+pyo3cls = {path = "pyo3/pyo3cls"}
+
+[workspace]
+members = [
+  "pyo3",
+  "pyo3/pyo3cls",
+  "pyo3/pyo3-derive-backend",
+  "integration-tests/helix-test",
+  "integration-tests/pyo3-test",
+  "omni-derive",
+]
+
+exclude = [
+    "helix"
+]

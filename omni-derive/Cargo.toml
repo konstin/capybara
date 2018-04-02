@@ -1,0 +1,19 @@
+[package]
+authors = ["konstin <konstin@mailbox.org>"]
+name = "omni-derive"
+version = "0.1.0"
+
+[dependencies]
+log = "0.4"
+quote = "0.3"
+pyo3 = { path = "../pyo3", features = ["extension-module"] }
+pyo3-derive-backend = { path = "../pyo3/pyo3-derive-backend" }
+helix = { path = "../helix" }
+syn = {features = ["full"], version = "0.11"}
+
+[lib]
+proc-macro = true
+
+[features]
+use_pyo3 = []
+use_helix = []
