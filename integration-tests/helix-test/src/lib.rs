@@ -3,8 +3,8 @@
 #[macro_use]
 extern crate omni;
 
-use omni::{class, methods};
 use omni::prelude::*;
+use omni::{class, methods};
 
 #[class]
 struct MyClass {}

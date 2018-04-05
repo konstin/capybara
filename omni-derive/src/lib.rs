@@ -5,7 +5,6 @@
 
 #![feature(proc_macro, specialization, const_fn)]
 #![recursion_limit = "1024"]
-
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
@@ -23,11 +22,10 @@ extern crate syn;
 use proc_macro::TokenStream;
 use pyo3_derive_backend::py_class::build_py_class;
 use pyo3_derive_backend::py_impl::build_py_methods;
-use quote::{Tokens, ToTokens};
+use quote::{ToTokens, Tokens};
 use std::str::FromStr;
 // It was just to much bloat
 use syn::*;
-
 
 #[derive(PartialEq)]
 struct Pyo3Builder;
@@ -63,11 +61,9 @@ impl BindingBuilder for HelixBuilder {
     /// Calls codegen_from_struct!
     fn class(_: String, input: String) -> String {
         let item = parse_item(&input).unwrap();
-        quote!(
-            codegen_from_struct! {
-                #item
-            }
-        ).to_string()
+        quote!(codegen_from_struct! {
+            #item
+        }).to_string()
     }
 
     /// This parses the methods into a call to codegen_extra_impls!
@@ -86,12 +82,14 @@ impl BindingBuilder for HelixBuilder {
                     let input = &method_sig.decl.inputs;
                     let output = match method_sig.decl.output {
                         FunctionRetTy::Default => quote!(()),
-                        FunctionRetTy::Ty(ref ty) => quote!(#ty)
+                        FunctionRetTy::Ty(ref ty) => quote!(#ty),
                     };
 
                     let method_type = match method_sig.decl.inputs.get(0) {
-                        Some(FnArg::SelfRef(_, _)) | Some(FnArg::SelfValue(_)) => quote!(instance_method),
-                        _ => quote!(class_method)
+                        Some(FnArg::SelfRef(_, _)) | Some(FnArg::SelfValue(_)) => {
+                            quote!(instance_method)
+                        }
+                        _ => quote!(class_method),
                     };
 
                     methods_for_macro.push(quote!({
@@ -106,7 +104,7 @@ impl BindingBuilder for HelixBuilder {
                 } else {
                     panic!();
                 }
-            };
+            }
         } else {
             panic!();
         };
@@ -149,7 +147,6 @@ impl BindingBuilder for Pyo3Builder {
     }
 }
 
-
 /// This can by added to a struct to generate bindings for that struct
 #[proc_macro_attribute]
 pub fn class(attr: TokenStream, input: TokenStream) -> TokenStream {
@@ -158,7 +155,7 @@ pub fn class(attr: TokenStream, input: TokenStream) -> TokenStream {
 
     let generated = match MY_TARGET {
         OmniTarget::Helix(HelixBuilder) => HelixBuilder::class(attr, input),
-        OmniTarget::Pyo3(Pyo3Builder) => Pyo3Builder::class(attr, input)
+        OmniTarget::Pyo3(Pyo3Builder) => Pyo3Builder::class(attr, input),
     };
 
     TokenStream::from_str(&generated).unwrap()
@@ -173,7 +170,7 @@ pub fn methods(attr: TokenStream, input: TokenStream) -> TokenStream {
 
     let generated = match MY_TARGET {
         OmniTarget::Helix(HelixBuilder) => HelixBuilder::methods(attr, input),
-        OmniTarget::Pyo3(Pyo3Builder) => Pyo3Builder::methods(attr, input)
+        OmniTarget::Pyo3(Pyo3Builder) => Pyo3Builder::methods(attr, input),
     };
 
     TokenStream::from_str(&generated).unwrap()
@@ -190,7 +187,7 @@ impl Pyo3Builder {
                     is_static = match method_sig.decl.inputs.get(0) {
                         Some(FnArg::SelfRef(_, _)) => false,
                         Some(FnArg::SelfValue(_)) => false,
-                        _ => true
+                        _ => true,
                     };
                 } else {
                     panic!("Expected a method");

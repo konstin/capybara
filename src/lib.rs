@@ -10,8 +10,8 @@ pub use omni_derive::{class, methods};
 #[cfg(feature = "use_pyo3")]
 pub mod prelude {
     pub use pyo3;
-    pub use pyo3cls::mod3init as pyo3_init;
     pub use pyo3::prelude::PyResult;
+    pub use pyo3cls::mod3init as pyo3_init;
 }
 
 #[cfg(feature = "use_helix")]
@@ -37,7 +37,7 @@ pub mod prelude {}
 ///
 #[macro_export]
 macro_rules! omni_init {
-    () => {}
+    () => {};
 }
 
 #[cfg(feature = "use_pyo3")]
@@ -62,7 +62,6 @@ macro_rules! omni_init {
         codegen_init!([$( $classname ),*]);
     }
 }
-
 
 /// This macro is doing essentially the same as helix' parse! macro with state: parse_struct, i.e.
 /// parsing the struct and forwarding it to codegen_struct!.
