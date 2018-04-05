@@ -10,9 +10,9 @@ struct MyClass {}
 
 #[omni_bindgen]
 impl MyClass {
-    fn print_and_double(x: i32) -> i32 {
-        println!("Printing from rust: {}", x * 2);
-        x * 2
+    fn add_and_print(x: i32, y: i32) -> i32 {
+        println!("Printing from rust: {}", x + y);
+        x + y
     }
 }
 

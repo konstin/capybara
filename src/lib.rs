@@ -6,7 +6,7 @@ extern crate omni_derive;
 pub extern crate pyo3;
 extern crate pyo3cls;
 
-pub use omni_derive::{class, methods, omni_bindgen};
+pub use omni_derive::omni_bindgen;
 #[cfg(feature = "use_pyo3")]
 pub use pyo3cls::mod3init as pyo3_init;
 

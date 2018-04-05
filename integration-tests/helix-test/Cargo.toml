@@ -3,6 +3,7 @@ name = "helix-test"
 version = "0.1.0"
 
 [lib]
+name = "helix_test"
 crate-type = ["cdylib"]
 
 [dependencies]

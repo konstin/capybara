@@ -20,7 +20,7 @@ def main():
 
     my_module = import_module(python_module_name)
 
-    x = my_module.MyClass.print_and_double(21)
+    x = my_module.MyClass.add_and_print(21, 21)
     assert x == 42
 
     os.remove(python_so_name)
