@@ -15,14 +15,12 @@ pyo3cls = {path = "pyo3/pyo3cls"}
 
 [workspace]
 members = [
-  "pyo3",
-  "pyo3/pyo3cls",
-  "pyo3/pyo3-derive-backend",
-  "integration-tests/helix-test",
-  "integration-tests/pyo3-test",
-  "omni-derive",
+    "omni-derive",
+    "integration-tests/helix-test",
+    "integration-tests/pyo3-test",
 ]
 
 exclude = [
-    "helix"
+    "helix",
+    "pyo3",
 ]
