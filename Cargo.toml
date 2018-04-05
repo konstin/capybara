@@ -16,7 +16,7 @@ use_helix = ["omni-derive/use_helix"]
 pyo3 = { path = "pyo3", features = ["extension-module"] }
 helix = { path = "helix" }
 omni-derive = { path = "omni-derive" }
-pyo3cls = {path = "pyo3/pyo3cls"}
+pyo3cls = { path = "pyo3/pyo3cls" }
 
 [workspace]
 members = [

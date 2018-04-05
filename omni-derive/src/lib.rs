@@ -5,12 +5,8 @@
 
 #![feature(proc_macro, specialization, const_fn)]
 #![recursion_limit = "1024"]
-#![allow(unused_imports)]
-#![allow(dead_code)]
 
-#[macro_use]
 extern crate helix;
-#[macro_use]
 extern crate log;
 extern crate proc_macro;
 extern crate pyo3;
@@ -22,44 +18,40 @@ extern crate syn;
 use proc_macro::TokenStream;
 use pyo3_derive_backend::py_class::build_py_class;
 use pyo3_derive_backend::py_impl::build_py_methods;
-use quote::{ToTokens, Tokens};
 use std::str::FromStr;
 // It was just to much bloat
 use syn::*;
 
-#[derive(PartialEq)]
 struct Pyo3Builder;
 
-#[derive(PartialEq)]
 struct HelixBuilder;
-
-/// A list of all available language bindings
-#[derive(PartialEq)]
-enum OmniTarget {
-    Pyo3(Pyo3Builder),
-    Helix(HelixBuilder),
-}
 
 #[cfg(all(feature = "use_helix", feature = "use_pyo3"))]
 compile_error!("You can't use helix and pyo3 at the same time.");
 
-#[cfg(feature = "use_helix")]
-const MY_TARGET: OmniTarget = OmniTarget::Helix(HelixBuilder);
-
-#[cfg(feature = "use_pyo3")]
-const MY_TARGET: OmniTarget = OmniTarget::Pyo3(Pyo3Builder);
+/// A workaround for getting feaature-independent typings
+fn get_builder() -> Box<BindingBuilder> {
+    if cfg!(feature = "use_helix") {
+        return Box::new(HelixBuilder);
+    } else if cfg!(feature = "use_pyo3") {
+        return Box::new(Pyo3Builder);
+    } else {
+        panic!("You have to select helix or pyo3")
+    }
+}
 
 /// A language binding is defined by implementing this on a unit struct and the init macro
 ///
-/// All methods get the stringified versions of what the proc_macro_attribute gets
+/// All methods get the stringified versions of what the proc_macro_attribute gets. They have to
+/// take a self to make the dynamic dispatch via get_builder() possible
 trait BindingBuilder {
-    fn class(attr: String, input: String) -> String;
-    fn methods(attr: String, input: String) -> String;
+    fn class(&self, attr: String, input: String) -> String;
+    fn methods(&self, attr: String, input: String) -> String;
 }
 
 impl BindingBuilder for HelixBuilder {
     /// Calls codegen_from_struct!
-    fn class(_: String, input: String) -> String {
+    fn class(&self, _: String, input: String) -> String {
         let item = parse_item(&input).unwrap();
         quote!(codegen_from_struct! {
             #item
@@ -67,7 +59,7 @@ impl BindingBuilder for HelixBuilder {
     }
 
     /// This parses the methods into a call to codegen_extra_impls!
-    fn methods(_: String, input: String) -> String {
+    fn methods(&self, _: String, input: String) -> String {
         // Really-low-prio-but-would-be-nice: Write this using macros only and then backport to
         // helix
         let mut methods_for_macro = vec![];
@@ -127,7 +119,7 @@ impl BindingBuilder for HelixBuilder {
 
 /// This is the same boilerplate that pyo3 uses
 impl BindingBuilder for Pyo3Builder {
-    fn class(attr: String, input: String) -> String {
+    fn class(&self, attr: String, input: String) -> String {
         let mut ast = parse_derive_input(&input).unwrap();
         let expanded = build_py_class(&mut ast, attr);
         quote!(
@@ -136,7 +128,7 @@ impl BindingBuilder for Pyo3Builder {
         ).to_string()
     }
 
-    fn methods(_: String, input: String) -> String {
+    fn methods(&self, _: String, input: String) -> String {
         let mut ast = parse_item(&input).unwrap();
         Pyo3Builder::add_function_annotations(&mut ast);
         let expanded = build_py_methods(&mut ast);
@@ -150,13 +142,7 @@ impl BindingBuilder for Pyo3Builder {
 /// This can by added to a struct to generate bindings for that struct
 #[proc_macro_attribute]
 pub fn class(attr: TokenStream, input: TokenStream) -> TokenStream {
-    let attr = attr.to_string();
-    let input = input.to_string();
-
-    let generated = match MY_TARGET {
-        OmniTarget::Helix(HelixBuilder) => HelixBuilder::class(attr, input),
-        OmniTarget::Pyo3(Pyo3Builder) => Pyo3Builder::class(attr, input),
-    };
+    let generated = get_builder().class(attr.to_string(), input.to_string());
 
     TokenStream::from_str(&generated).unwrap()
 }
@@ -165,13 +151,7 @@ pub fn class(attr: TokenStream, input: TokenStream) -> TokenStream {
 /// have the same functionality manually implemented
 #[proc_macro_attribute]
 pub fn methods(attr: TokenStream, input: TokenStream) -> TokenStream {
-    let attr = attr.to_string();
-    let input = input.to_string();
-
-    let generated = match MY_TARGET {
-        OmniTarget::Helix(HelixBuilder) => HelixBuilder::methods(attr, input),
-        OmniTarget::Pyo3(Pyo3Builder) => Pyo3Builder::methods(attr, input),
-    };
+    let generated = get_builder().methods(attr.to_string(), input.to_string());
 
     TokenStream::from_str(&generated).unwrap()
 }

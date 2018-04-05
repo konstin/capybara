@@ -1,5 +1,7 @@
 #![feature(proc_macro, proc_macro_lib, specialization, const_fn)]
 
+#[warn(missing_docs)]
+
 pub extern crate helix;
 extern crate omni_derive;
 pub extern crate pyo3;
