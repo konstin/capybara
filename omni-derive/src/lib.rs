@@ -21,11 +21,12 @@ extern crate quote;
 extern crate syn;
 
 use proc_macro::TokenStream;
+use pyo3_derive_backend::py_class::build_py_class;
+use pyo3_derive_backend::py_impl::build_py_methods;
 use quote::{Tokens, ToTokens};
 use std::str::FromStr;
 // It was just to much bloat
 use syn::*;
-use pyo3_derive_backend::*;
 
 
 #[derive(PartialEq)]
@@ -51,19 +52,28 @@ const MY_TARGET: OmniTarget = OmniTarget::Helix(HelixBuilder);
 const MY_TARGET: OmniTarget = OmniTarget::Pyo3(Pyo3Builder);
 
 /// A language binding is defined by implementing this on a unit struct and the init macro
+///
+/// All methods get the stringified versions of what the proc_macro_attribute gets
 trait BindingBuilder {
     fn class(attr: String, input: String) -> String;
     fn methods(attr: String, input: String) -> String;
 }
 
 impl BindingBuilder for HelixBuilder {
+    /// Calls codegen_from_struct!
     fn class(_: String, input: String) -> String {
-        "codegen_from_struct! {".to_string() + &input + "}"
+        let item = parse_item(&input).unwrap();
+        quote!(
+            codegen_from_struct! {
+                #item
+            }
+        ).to_string()
     }
 
-    /// This mostly calls codegen_extra_impls from helix
+    /// This parses the methods into a call to codegen_extra_impls!
     fn methods(_: String, input: String) -> String {
-        // TODO: Write this using macros only and then backport to helix
+        // Really-low-prio-but-would-be-nice: Write this using macros only and then backport to
+        // helix
         let mut methods_for_macro = vec![];
 
         let ast = parse_item(&input).unwrap();
@@ -117,30 +127,25 @@ impl BindingBuilder for HelixBuilder {
     }
 }
 
-
+/// This is the same boilerplate that pyo3 uses
 impl BindingBuilder for Pyo3Builder {
     fn class(attr: String, input: String) -> String {
         let mut ast = parse_derive_input(&input).unwrap();
-
-        let expanded = py_class::build_py_class(&mut ast, attr);
-        let mut tokens = Tokens::new();
-        ast.to_tokens(&mut tokens);
-        String::from(tokens.as_str()) + expanded.as_str()
+        let expanded = build_py_class(&mut ast, attr);
+        quote!(
+            #ast
+            #expanded
+        ).to_string()
     }
 
     fn methods(_: String, input: String) -> String {
-        // Parse the string representation into a syntax tree
         let mut ast = parse_item(&input).unwrap();
-
         Pyo3Builder::add_function_annotations(&mut ast);
-
-        // Build the output
-        let expanded = py_impl::build_py_methods(&mut ast);
-
-        // Return the generated impl as a TokenStream
-        let mut tokens = Tokens::new();
-        ast.to_tokens(&mut tokens);
-        String::from(tokens.as_str()) + expanded.as_str()
+        let expanded = build_py_methods(&mut ast);
+        quote!(
+            #ast
+            #expanded
+        ).to_string()
     }
 }
 
@@ -175,28 +180,7 @@ pub fn methods(attr: TokenStream, input: TokenStream) -> TokenStream {
 }
 
 impl Pyo3Builder {
-    /// That's actually just "-> SomeType" to "-> PyResult<Sometype>"
-    fn build_py_result_type(ty: Ty) -> FunctionRetTy {
-        FunctionRetTy::Ty(Ty::Path(None, Path {
-            global: false,
-            segments: vec![
-                PathSegment {
-                    ident: Ident::new("PyResult"),
-                    parameters: PathParameters::AngleBracketed(
-                        AngleBracketedParameterData {
-                            lifetimes: vec![],
-                            types: vec![ty],
-                            bindings: vec![],
-                        }
-                    ),
-                }
-            ],
-        }))
-    }
-
-    /// pyo3 expects static methods to be annotated, so let's add that function on static methods.
-    /// It also expects function to return a PyResult even if they don't return anything, so lets
-    /// add that to
+    /// pyo3 expects static methods to be annotated, so let's add that annotation on static methods.
     fn add_function_annotations(ast: &mut Item) {
         if let ItemKind::Impl(_, _, _, _, _, ref mut impl_items) = ast.node {
             for method in impl_items.iter_mut() {
