@@ -17,7 +17,6 @@ The boilerplate:
 extern crate omni;
 
 use omni::{class, methods};
-use omni::prelude::*;
 ```
 
 Annotate every class you want to export with `#[class]`, e.g.:

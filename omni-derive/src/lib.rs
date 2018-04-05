@@ -30,11 +30,11 @@ struct HelixBuilder;
 compile_error!("You can't use helix and pyo3 at the same time.");
 
 /// A workaround for getting feaature-independent typings
-fn get_builder() -> Box<BindingBuilder> {
+fn get_builder() -> &'static BindingBuilder {
     if cfg!(feature = "use_helix") {
-        return Box::new(HelixBuilder);
+        return &HelixBuilder;
     } else if cfg!(feature = "use_pyo3") {
-        return Box::new(Pyo3Builder);
+        return &Pyo3Builder;
     } else {
         panic!("You have to select helix or pyo3")
     }

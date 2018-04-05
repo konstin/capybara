@@ -1,23 +1,14 @@
 #![feature(proc_macro, proc_macro_lib, specialization, const_fn)]
 
 #[warn(missing_docs)]
-
 pub extern crate helix;
 extern crate omni_derive;
 pub extern crate pyo3;
 extern crate pyo3cls;
 
 pub use omni_derive::{class, methods};
-
 #[cfg(feature = "use_pyo3")]
-pub mod prelude {
-    pub use pyo3;
-    pub use pyo3::prelude::PyResult;
-    pub use pyo3cls::mod3init as pyo3_init;
-}
-
-#[cfg(feature = "use_helix")]
-pub mod prelude {}
+pub use pyo3cls::mod3init as pyo3_init;
 
 /// Creates the FFI entrypoint.
 ///
@@ -46,8 +37,9 @@ macro_rules! omni_init {
 #[macro_export]
 macro_rules! omni_init {
     ( $modname:ident, [$( $classname:ty ),*] ) => {
-        use $crate::pyo3::prelude::*;
-        #[$crate::prelude::pyo3_init($modname)]
+        use $crate::pyo3;
+        use $crate::pyo3::{ObjectProtocol, Python, PyModule, PyResult};
+        #[$crate::pyo3_init($modname)]
         fn omni_init(_py: Python, m: &PyModule) -> PyResult<()> {
             $(
                 m.add_class::<$classname>().unwrap();

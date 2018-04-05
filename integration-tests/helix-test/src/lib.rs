@@ -3,7 +3,6 @@
 #[macro_use]
 extern crate omni;
 
-use omni::prelude::*;
 use omni::{class, methods};
 
 #[class]
