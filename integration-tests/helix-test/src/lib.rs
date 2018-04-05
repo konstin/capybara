@@ -3,12 +3,12 @@
 #[macro_use]
 extern crate omni;
 
-use omni::{class, methods};
+use omni::omni_bindgen;
 
-#[class]
+#[omni_bindgen]
 struct MyClass {}
 
-#[methods]
+#[omni_bindgen]
 impl MyClass {
     fn print_and_double(x: i32) -> i32 {
         println!("Printing from rust: {}", x * 2);

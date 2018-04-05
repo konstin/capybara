@@ -2,7 +2,7 @@
 name = "omni"
 version = "0.1.0"
 authors = ["konstin <konstin@mailbox.org>"]
-description = "A framework for generating Rust bindings for arbitrary languages"
+description = "A framework for generating bindings from Rust to arbitrary languages"
 readme = "readme.md"
 keywords = ["ffi", "bindings", "pyo3", "python", "helix", "ruby", "rails"]
 categories = ["api-bindings", "development-tools::ffi"]

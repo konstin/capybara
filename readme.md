@@ -1,6 +1,6 @@
 # Omni
 
-A framework for generating Rust bindings for arbitrary languages. Currently python and ruby are supported.
+A framework for generating bindings from Rust to arbitrary languages. Currently python and ruby are supported.
 
 **Note: This is in alpha stage. It can't do much more than static methods yet.**
 
@@ -16,20 +16,20 @@ The boilerplate:
 #[macro_use]
 extern crate omni;
 
-use omni::{class, methods};
+use omni::omni_bindgen;
 ```
 
 Annotate every class you want to export with `#[class]`, e.g.:
 
 ```rust
-#[class]
+#[omni_bindgen]
 struct MyClass {}
 ```
 
 Put the methods to be exported into an impl-block and annotate that block with `#[methods]`
 
 ```rust
-#[methods]
+#[omni_bindgen]
 impl MyClass {
     fn print_and_double(x: i32) -> i32 {
         println!("Printing from rust: {}", x * 2);
@@ -85,7 +85,6 @@ dependencies the ones from this repo.
  * Constructors
  * Special methods (equals, comparisons, hashing)
  * A CLI that wraps the wasm-bindgen-cli, setuptools-rust and `rails generate helix:crate text_transform`
- * Unifying the different attributes to a single one (omni_bindgen?)
  * Integration of wasm_bindgen
  * A default No-op target
  * Functions (in not methods)
@@ -94,7 +93,7 @@ dependencies the ones from this repo.
  * Conversions
  * Returning errors
  * Importing via extern blocks
- * Better interface for languages
+ * Better interface for adding languages
 
 ## Testing
 

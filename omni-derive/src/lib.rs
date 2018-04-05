@@ -29,6 +29,32 @@ struct HelixBuilder;
 #[cfg(all(feature = "use_helix", feature = "use_pyo3"))]
 compile_error!("You can't use helix and pyo3 at the same time.");
 
+/// The heart of omni: This attribute can be added to a struct to generate bindings for that struct,
+/// and then also to a plain impl block (i.e. not a trait implementation).
+#[proc_macro_attribute]
+pub fn omni_bindgen(attr: TokenStream, input: TokenStream) -> TokenStream {
+    let builder = get_builder();
+    let ast = parse_item(&input.to_string()).unwrap();
+
+    // Ideally, all libraries would use the same stable syn ^1.0 and expose an interface with syn
+    // types, so we could parse once and forward the already extracted parts. But for we let all
+    // libraries do their own parsing.
+    let generated = match ast.node {
+        ItemKind::Fn(_, _, _, _, _, _) => panic!("Sorry, omni doesn't support functions yet"),
+        ItemKind::ForeignMod(_) => panic!("Sorry, omni doesn't support extern block yet"),
+        ItemKind::Enum(_, _) => panic!("Sorry, omni doesn't support enums yet"),
+        ItemKind::Struct(_, _) => builder.class(attr.to_string(), input.to_string()),
+        ItemKind::Trait(_, _, _, _) => panic!("Sorry, omni doesn't support trait declarations yet"),
+        ItemKind::Impl(_, _, _, _, _, _) => builder.methods(attr.to_string(), input.to_string()),
+        _ => panic!(
+            "You can not generate bindings for this kind of item (Hint: {})",
+            ast.ident
+        ),
+    };
+
+    TokenStream::from_str(&generated).unwrap()
+}
+
 /// A workaround for getting feaature-independent typings
 fn get_builder() -> &'static BindingBuilder {
     if cfg!(feature = "use_helix") {
@@ -137,23 +163,6 @@ impl BindingBuilder for Pyo3Builder {
             #expanded
         ).to_string()
     }
-}
-
-/// This can by added to a struct to generate bindings for that struct
-#[proc_macro_attribute]
-pub fn class(attr: TokenStream, input: TokenStream) -> TokenStream {
-    let generated = get_builder().class(attr.to_string(), input.to_string());
-
-    TokenStream::from_str(&generated).unwrap()
-}
-
-/// This can be added to a plain impl-block. The struct must have the `#[class]` attribute or
-/// have the same functionality manually implemented
-#[proc_macro_attribute]
-pub fn methods(attr: TokenStream, input: TokenStream) -> TokenStream {
-    let generated = get_builder().methods(attr.to_string(), input.to_string());
-
-    TokenStream::from_str(&generated).unwrap()
 }
 
 impl Pyo3Builder {
