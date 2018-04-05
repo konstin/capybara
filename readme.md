@@ -1,6 +1,6 @@
 # Omni
 
-A framework to generate Rust bindings for arbitrary languages with minimal syntax. Currently python and ruby are supported.
+A framework for generating Rust bindings for arbitrary languages. Currently python and ruby are supported.
 
 **Note: This is in alpha stage. It can't do much more than static methods yet.**
 
