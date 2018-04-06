@@ -58,8 +58,8 @@ pub fn omni_bindgen(attr: TokenStream, input: TokenStream) -> TokenStream {
 /// A workaround for getting feaature-independent typings
 fn get_builder() -> &'static BindingBuilder {
     let features = vec![
-        cfg!(feature = "use_helix"),
-        cfg!(feature = "use_pyo3"),
+        cfg!(feature = "omni_ruby"),
+        cfg!(feature = "omni_python"),
     ];
 
     let activated: usize = features.iter().map(|x| *x as usize).sum();
@@ -67,9 +67,9 @@ fn get_builder() -> &'static BindingBuilder {
         panic!("You must activate a single target for omni, not {}", activated);
     }
 
-    if cfg!(feature = "use_helix") {
+    if cfg!(feature = "omni_ruby") {
         return &HelixBuilder;
-    } else if cfg!(feature = "use_pyo3") {
+    } else if cfg!(feature = "omni_python") {
         return &Pyo3Builder;
     } else {
         return &StubBuilder;

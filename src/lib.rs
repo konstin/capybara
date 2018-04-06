@@ -7,7 +7,7 @@ pub extern crate pyo3;
 extern crate pyo3cls;
 
 pub use omni_derive::omni_bindgen;
-#[cfg(feature = "use_pyo3")]
+#[cfg(feature = "omni_python")]
 pub use pyo3cls::mod3init as pyo3_init;
 
 /// Creates the FFI entrypoint.
@@ -33,7 +33,7 @@ macro_rules! omni_init {
     () => {};
 }
 
-#[cfg(feature = "use_pyo3")]
+#[cfg(feature = "omni_python")]
 #[macro_export]
 macro_rules! omni_init {
     ( $modname:ident, [$( $classname:ty ),*] ) => {
@@ -49,7 +49,7 @@ macro_rules! omni_init {
     };
 }
 
-#[cfg(feature = "use_helix")]
+#[cfg(feature = "omni_ruby")]
 #[macro_export]
 macro_rules! omni_init {
     { $modname:ident, [$( $classname:ident ),*] } => {
@@ -57,7 +57,7 @@ macro_rules! omni_init {
     }
 }
 
-#[cfg(not(any(feature = "use_pyo3", feature = "use_helix")))]
+#[cfg(not(any(feature = "omni_python", feature = "omni_ruby")))]
 #[macro_export]
 macro_rules! omni_init {
     { $modname:ident, [$( $classname:ident ),*] } => {
@@ -72,7 +72,7 @@ macro_rules! omni_init {
 /// The only catch here is that the other helix macros (and especially codegen_struct!) are defined
 /// in the helix crate, so we need to get them into scope. The current use $crate::helix::*; works,
 /// though there's surely something more elegant.
-#[cfg(feature = "use_helix")]
+#[cfg(feature = "omni_ruby")]
 #[macro_export]
 macro_rules! codegen_from_struct {
     {

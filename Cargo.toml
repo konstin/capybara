@@ -9,8 +9,8 @@ categories = ["api-bindings", "development-tools::ffi"]
 license = "Apache-2.0 OR MIT"
 
 [features]
-use_pyo3 = ["omni-derive/use_pyo3"]
-use_helix = ["omni-derive/use_helix"]
+omni_python = ["omni-derive/omni_python"]
+omni_ruby = ["omni-derive/omni_ruby"]
 
 [dependencies]
 pyo3 = { path = "pyo3", features = ["extension-module"] }

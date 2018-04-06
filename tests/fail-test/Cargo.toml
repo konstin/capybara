@@ -8,4 +8,4 @@ name = "fail_test"
 crate-type = ["cdylib"]
 
 [dependencies]
-omni = { path = "../../", features = ["use_pyo3", "use_helix"] }
+omni = { path = "../../", features = ["omni_python", "omni_ruby"] }

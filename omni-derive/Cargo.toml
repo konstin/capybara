@@ -15,5 +15,5 @@ syn = {features = ["full"], version = "0.11"}
 proc-macro = true
 
 [features]
-use_pyo3 = []
-use_helix = []
+omni_python = []
+omni_ruby = []

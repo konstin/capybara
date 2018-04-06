@@ -53,15 +53,15 @@ name = "<Name of the module you used in omni_inti!>"
 crate-type = ["cdylib"]
 ```
 
-If only target a single language, you can use the `features` option. "use_pyo3" is for python, "use_helix" is for ruby.
+If only target a single language, you can use the `features` option. "omni_python" is for python, "omni_ruby" is for ruby.
 Note that these options are mutually exclusive.
 
 ```
 [dependencies]
-omni = { version = "0.1.0", features = ["use_pyo3"] }
+omni = { version = "0.1.0", features = ["omni_python"] }
 ```
 
-You can also specify the target language by omitting the features part and instead passing `--features use_helix` to
+You can also specify the target language by omitting the features part and instead passing `--features omni_ruby` to
 `cargo build`.
 
 ### Python (pyo3)
