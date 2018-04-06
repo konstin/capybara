@@ -7,4 +7,4 @@ name = "helix_test"
 crate-type = ["cdylib"]
 
 [dependencies]
-omni = { path = "../../", features = ["omni_ruby"] }
+capybara = { path = "../../", features = ["capybara_ruby"] }

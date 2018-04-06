@@ -29,10 +29,10 @@ struct HelixBuilder;
 /// This is stub target that does not emitt any bindings
 struct StubBuilder;
 
-/// The heart of omni: This attribute can be added to a struct to generate bindings for that struct,
+/// The heart of capybara: This attribute can be added to a struct to generate bindings for that struct,
 /// and then also to a plain impl block (i.e. not a trait implementation).
 #[proc_macro_attribute]
-pub fn omni_bindgen(attr: TokenStream, input: TokenStream) -> TokenStream {
+pub fn capybara_bindgen(attr: TokenStream, input: TokenStream) -> TokenStream {
     let builder = get_builder();
     let ast = parse_item(&input.to_string()).unwrap();
 
@@ -40,14 +40,14 @@ pub fn omni_bindgen(attr: TokenStream, input: TokenStream) -> TokenStream {
     // types, so we could parse once and forward the already extracted parts. But for we let all
     // libraries do their own parsing.
     let generated = match ast.node {
-        ItemKind::Fn(_, _, _, _, _, _) => panic!("Sorry, omni doesn't support functions yet"),
-        ItemKind::ForeignMod(_) => panic!("Sorry, omni doesn't support extern block yet"),
-        ItemKind::Enum(_, _) => panic!("Sorry, omni doesn't support enums yet"),
+        ItemKind::Fn(_, _, _, _, _, _) => panic!("Sorry, functions aren't supported yet"),
+        ItemKind::ForeignMod(_) => panic!("Sorry, extern block aren't supported yet"),
+        ItemKind::Enum(_, _) => panic!("Sorry, enums aren't supported yet"),
         ItemKind::Struct(_, _) => builder.class(attr.to_string(), input.to_string()),
-        ItemKind::Trait(_, _, _, _) => panic!("Sorry, omni doesn't support trait declarations yet"),
+        ItemKind::Trait(_, _, _, _) => panic!("Sorry, trait declarations aren't supported yet"),
         ItemKind::Impl(_, _, _, _, _, _) => builder.methods(attr.to_string(), input.to_string()),
         _ => panic!(
-            "You can not generate bindings for this kind of item (Hint: {})",
+            "You can not generate bindings for this kind of item. ({})",
             ast.ident
         ),
     };
@@ -58,18 +58,21 @@ pub fn omni_bindgen(attr: TokenStream, input: TokenStream) -> TokenStream {
 /// A workaround for getting feaature-independent typings
 fn get_builder() -> &'static BindingBuilder {
     let features = vec![
-        cfg!(feature = "omni_ruby"),
-        cfg!(feature = "omni_python"),
+        cfg!(feature = "capybara_ruby"),
+        cfg!(feature = "capybara_python"),
     ];
 
     let activated: usize = features.iter().map(|x| *x as usize).sum();
     if activated > 1 {
-        panic!("You must activate a single target for omni, not {}", activated);
+        panic!(
+            "You can only generate binding for a single target. Check that you only use a\
+             single feature of capybara in your Cargo.toml"
+        );
     }
 
-    if cfg!(feature = "omni_ruby") {
+    if cfg!(feature = "capybara_ruby") {
         return &HelixBuilder;
-    } else if cfg!(feature = "omni_python") {
+    } else if cfg!(feature = "capybara_python") {
         return &Pyo3Builder;
     } else {
         return &StubBuilder;

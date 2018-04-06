@@ -1,6 +1,6 @@
 [package]
 authors = ["konstin <konstin@mailbox.org>"]
-name = "omni-derive"
+name = "capybara-derive"
 version = "0.1.0"
 
 [dependencies]
@@ -15,5 +15,5 @@ syn = {features = ["full"], version = "0.11"}
 proc-macro = true
 
 [features]
-omni_python = []
-omni_ruby = []
+capybara_python = []
+capybara_ruby = []

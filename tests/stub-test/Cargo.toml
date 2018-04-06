@@ -8,4 +8,4 @@ name = "stub_test"
 crate-type = ["cdylib"]
 
 [dependencies]
-omni = { path = "../../" }
+capybara = { path = "../../" }

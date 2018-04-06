@@ -1,5 +1,5 @@
 [package]
-name = "omni"
+name = "capybara"
 version = "0.1.0"
 authors = ["konstin <konstin@mailbox.org>"]
 description = "A framework for generating bindings from Rust to arbitrary languages"
@@ -9,18 +9,18 @@ categories = ["api-bindings", "development-tools::ffi"]
 license = "Apache-2.0 OR MIT"
 
 [features]
-omni_python = ["omni-derive/omni_python"]
-omni_ruby = ["omni-derive/omni_ruby"]
+capybara_python = ["capybara-derive/capybara_python"]
+capybara_ruby = ["capybara-derive/capybara_ruby"]
 
 [dependencies]
 pyo3 = { path = "pyo3", features = ["extension-module"] }
 helix = { path = "helix" }
-omni-derive = { path = "omni-derive" }
+capybara-derive = { path = "capybara-derive" }
 pyo3cls = { path = "pyo3/pyo3cls" }
 
 [workspace]
 members = [
-    "omni-derive",
+    "capybara-derive",
     "tests/fail-test",
     "tests/helix-test",
     "tests/pyo3-test",

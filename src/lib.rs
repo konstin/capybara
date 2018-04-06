@@ -1,13 +1,13 @@
 #![feature(proc_macro, proc_macro_lib, specialization, const_fn)]
 
+extern crate capybara_derive;
 #[warn(missing_docs)]
 pub extern crate helix;
-extern crate omni_derive;
 pub extern crate pyo3;
 extern crate pyo3cls;
 
-pub use omni_derive::omni_bindgen;
-#[cfg(feature = "omni_python")]
+pub use capybara_derive::capybara_bindgen;
+#[cfg(feature = "capybara_python")]
 pub use pyo3cls::mod3init as pyo3_init;
 
 /// Creates the FFI entrypoint.
@@ -25,22 +25,22 @@ pub use pyo3cls::mod3init as pyo3_init;
 /// ```
 /// #[class]
 /// #struct MyClass {}
-/// omni_init! (my_module, [MyClass]);
+/// capybara_init! (my_module, [MyClass]);
 /// ```
 ///
 #[macro_export]
-macro_rules! omni_init {
+macro_rules! capybara_init {
     () => {};
 }
 
-#[cfg(feature = "omni_python")]
+#[cfg(feature = "capybara_python")]
 #[macro_export]
-macro_rules! omni_init {
+macro_rules! capybara_init {
     ( $modname:ident, [$( $classname:ty ),*] ) => {
         use $crate::pyo3;
         use $crate::pyo3::{ObjectProtocol, Python, PyModule, PyResult};
         #[$crate::pyo3_init($modname)]
-        fn omni_init(_py: Python, m: &PyModule) -> PyResult<()> {
+        fn capybara_init(_py: Python, m: &PyModule) -> PyResult<()> {
             $(
                 m.add_class::<$classname>().unwrap();
             )*
@@ -49,22 +49,21 @@ macro_rules! omni_init {
     };
 }
 
-#[cfg(feature = "omni_ruby")]
+#[cfg(feature = "capybara_ruby")]
 #[macro_export]
-macro_rules! omni_init {
+macro_rules! capybara_init {
     { $modname:ident, [$( $classname:ident ),*] } => {
         codegen_init!([$( $classname ),*]);
     }
 }
 
-#[cfg(not(any(feature = "omni_python", feature = "omni_ruby")))]
+#[cfg(not(any(feature = "capybara_python", feature = "capybara_ruby")))]
 #[macro_export]
-macro_rules! omni_init {
+macro_rules! capybara_init {
     { $modname:ident, [$( $classname:ident ),*] } => {
 
     }
 }
-
 
 /// This macro is doing essentially the same as helix' parse! macro with state: parse_struct, i.e.
 /// parsing the struct and forwarding it to codegen_struct!.
@@ -72,7 +71,7 @@ macro_rules! omni_init {
 /// The only catch here is that the other helix macros (and especially codegen_struct!) are defined
 /// in the helix crate, so we need to get them into scope. The current use $crate::helix::*; works,
 /// though there's surely something more elegant.
-#[cfg(feature = "omni_ruby")]
+#[cfg(feature = "capybara_ruby")]
 #[macro_export]
 macro_rules! codegen_from_struct {
     {

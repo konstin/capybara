@@ -1,4 +1,4 @@
-# Omni
+# capybara
 
 A framework for generating bindings from Rust to arbitrary languages. Currently python and ruby are supported.
 
@@ -14,22 +14,22 @@ The boilerplate:
 #![feature(proc_macro, specialization, const_fn)]
 
 #[macro_use]
-extern crate omni;
+extern crate capybara;
 
-use omni::omni_bindgen;
+use capybara::capybara_bindgen;
 ```
 
 Annotate every class you want to export with `#[class]`, e.g.:
 
 ```rust
-#[omni_bindgen]
+#[capybara_bindgen]
 struct MyClass {}
 ```
 
 Put the methods to be exported into an impl-block and annotate that block with `#[methods]`
 
 ```rust
-#[omni_bindgen]
+#[capybara_bindgen]
 impl MyClass {
     fn print_and_add(x: i32, y: i32) -> i32 {
         println!("Printing from rust: {}", x + y);
@@ -38,30 +38,30 @@ impl MyClass {
 }
 ```
 
-Finally, we need to generate an extrypoint for module/package on the target site. This is done by calling omni_init!
+Finally, we need to generate an extrypoint for module/package on the target site. This is done by calling capybara_init!
 with the name of module/package and the names of the structs to generate classes form.
 
 ```rust
-omni_init! {omni_test, [MyClass]}
+capybara_init! {capybara_test, [MyClass]}
 ```
 
 Add the following to your Cargo.toml:
 
 ```toml
 [lib]
-name = "<Name of the module you used in omni_inti!>"
+name = "<Name of the module you used in capybara_inti!>"
 crate-type = ["cdylib"]
 ```
 
-If only target a single language, you can use the `features` option. "omni_python" is for python, "omni_ruby" is for ruby.
+If only target a single language, you can use the `features` option. "capybara_python" is for python, "capybara_ruby" is for ruby.
 Note that these options are mutually exclusive.
 
 ```
 [dependencies]
-omni = { version = "0.1.0", features = ["omni_python"] }
+capybara = { version = "0.1.0", features = ["capybara_python"] }
 ```
 
-You can also specify the target language by omitting the features part and instead passing `--features omni_ruby` to
+You can also specify the target language by omitting the features part and instead passing `--features capybara_ruby` to
 `cargo build`.
 
 ### Python (pyo3)

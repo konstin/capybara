@@ -8,4 +8,4 @@ name = "pyo3_test"
 crate-type = ["cdylib"]
 
 [dependencies]
-omni = { path = "../../", features = ["omni_python"] }
+capybara = { path = "../../", features = ["capybara_python"] }

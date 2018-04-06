@@ -1,14 +1,14 @@
 #![feature(proc_macro, specialization, const_fn)]
 
 #[macro_use]
-extern crate omni;
+extern crate capybara;
 
-use omni::omni_bindgen;
+use capybara::capybara_bindgen;
 
-#[omni_bindgen]
+#[capybara_bindgen]
 struct MyClass {}
 
-#[omni_bindgen]
+#[capybara_bindgen]
 impl MyClass {
     fn add_and_print(x: i32, y: i32) -> i32 {
         println!("Printing from rust: {}", x + y);
@@ -16,4 +16,4 @@ impl MyClass {
     }
 }
 
-omni_init! {fail_test, [MyClass]}
+capybara_init! {fail_test, [MyClass]}
