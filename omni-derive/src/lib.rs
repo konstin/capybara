@@ -26,8 +26,8 @@ struct Pyo3Builder;
 
 struct HelixBuilder;
 
-#[cfg(all(feature = "use_helix", feature = "use_pyo3"))]
-compile_error!("You can't use helix and pyo3 at the same time.");
+/// This is stub target that does not emitt any bindings
+struct StubBuilder;
 
 /// The heart of omni: This attribute can be added to a struct to generate bindings for that struct,
 /// and then also to a plain impl block (i.e. not a trait implementation).
@@ -57,12 +57,22 @@ pub fn omni_bindgen(attr: TokenStream, input: TokenStream) -> TokenStream {
 
 /// A workaround for getting feaature-independent typings
 fn get_builder() -> &'static BindingBuilder {
+    let features = vec![
+        cfg!(feature = "use_helix"),
+        cfg!(feature = "use_pyo3"),
+    ];
+
+    let activated: usize = features.iter().map(|x| *x as usize).sum();
+    if activated > 1 {
+        panic!("You must activate a single target for omni, not {}", activated);
+    }
+
     if cfg!(feature = "use_helix") {
         return &HelixBuilder;
     } else if cfg!(feature = "use_pyo3") {
         return &Pyo3Builder;
     } else {
-        panic!("You have to select helix or pyo3")
+        return &StubBuilder;
     }
 }
 
@@ -193,5 +203,15 @@ impl Pyo3Builder {
         } else {
             panic!("Expected an impl block")
         }
+    }
+}
+
+impl BindingBuilder for StubBuilder {
+    fn class(&self, _: String, input: String) -> String {
+        return input;
+    }
+
+    fn methods(&self, _: String, input: String) -> String {
+        return input;
     }
 }

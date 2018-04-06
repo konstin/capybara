@@ -21,8 +21,10 @@ pyo3cls = { path = "pyo3/pyo3cls" }
 [workspace]
 members = [
     "omni-derive",
-    "integration-tests/helix-test",
-    "integration-tests/pyo3-test",
+    "tests/fail-test",
+    "tests/helix-test",
+    "tests/pyo3-test",
+    "tests/stub-test",
 ]
 
 exclude = [

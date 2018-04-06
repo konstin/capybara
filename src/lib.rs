@@ -52,10 +52,19 @@ macro_rules! omni_init {
 #[cfg(feature = "use_helix")]
 #[macro_export]
 macro_rules! omni_init {
-     { $modname:ident, [$( $classname:ident ),*] } => {
+    { $modname:ident, [$( $classname:ident ),*] } => {
         codegen_init!([$( $classname ),*]);
     }
 }
+
+#[cfg(not(any(feature = "use_pyo3", feature = "use_helix")))]
+#[macro_export]
+macro_rules! omni_init {
+    { $modname:ident, [$( $classname:ident ),*] } => {
+
+    }
+}
+
 
 /// This macro is doing essentially the same as helix' parse! macro with state: parse_struct, i.e.
 /// parsing the struct and forwarding it to codegen_struct!.

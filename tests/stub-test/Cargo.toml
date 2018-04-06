@@ -1,0 +1,11 @@
+[package]
+authors = ["konstin <konstin@mailbox.org>"]
+name = "stub-test"
+version = "0.1.0"
+
+[lib]
+name = "stub_test"
+crate-type = ["cdylib"]
+
+[dependencies]
+omni = { path = "../../" }

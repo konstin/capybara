@@ -3,7 +3,7 @@
 
 set -ex
 
-cd integration-tests
+cd tests
 
 for I in ./*; do
     cd $I; ./test; cd ..

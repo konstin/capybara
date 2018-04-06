@@ -1,0 +1,11 @@
+[package]
+authors = ["konstin <konstin@mailbox.org>"]
+name = "fail-test"
+version = "0.1.0"
+
+[lib]
+name = "fail_test"
+crate-type = ["cdylib"]
+
+[dependencies]
+omni = { path = "../../", features = ["use_pyo3", "use_helix"] }

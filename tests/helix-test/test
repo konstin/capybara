@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -ex
+
+cargo build
+DEBUG_RUST=true rake test
+

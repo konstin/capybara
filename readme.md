@@ -31,9 +31,9 @@ Put the methods to be exported into an impl-block and annotate that block with `
 ```rust
 #[omni_bindgen]
 impl MyClass {
-    fn print_and_double(x: i32) -> i32 {
-        println!("Printing from rust: {}", x * 2);
-        x * 2
+    fn print_and_add(x: i32, y: i32) -> i32 {
+        println!("Printing from rust: {}", x + y);
+        x + y
     }
 }
 ```
@@ -79,19 +79,19 @@ dependencies the ones from this repo.
 
  * Empty structs
  * Static methods that do not return errors
+ * A default No-op target
 
 ## Missing
 
  * Constructors
- * Special methods (equals, comparisons, hashing)
- * A CLI that wraps the wasm-bindgen-cli, setuptools-rust and `rails generate helix:crate text_transform`
- * Integration of wasm_bindgen
- * A default No-op target
  * Functions (in not methods)
- * Exporting trait implementations
- * Windows and Mac OS X (This shouldn't be to much work, mostly making the python test platform agnostic)
+ * Integration of wasm_bindgen
+ * A CLI that wraps the wasm-bindgen-cli, setuptools-rust and `rails generate helix:crate text_transform`
+  * Windows and Mac OS X (This shouldn't be to much work, mostly porting the tests from bash + python to pure rust)
+ * Special methods (equals, comparisons, hashing)
  * Conversions
  * Returning errors
+ * Exporting trait implementations
  * Importing via extern blocks
  * Better interface for adding languages
 
