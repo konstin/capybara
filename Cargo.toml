@@ -24,6 +24,7 @@ wasm-bindgen = { git  = "https://github.com/rustwasm/wasm-bindgen", rev = "9421e
 [workspace]
 members = [
     "capybara-derive",
+    "syn-0-11",
     "tests/fail-test",
     "tests/helix-test",
     "tests/pyo3-test",
