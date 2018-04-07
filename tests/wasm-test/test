@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Testing with the browser is cumbersome and slow, so this uses node instead
+
+set -ex
+
+cargo build --target wasm32-unknown-unknown
+
+wasm-bindgen ../../target/wasm32-unknown-unknown/debug/wasm_test.wasm --out-dir . --nodejs
+
+node index.js | grep -q 42 && echo "OK" || echo "FAILURE"

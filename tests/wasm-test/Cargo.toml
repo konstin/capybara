@@ -1,0 +1,11 @@
+[package]
+authors = ["konstin <konstin@mailbox.org>"]
+name = "wasm-test"
+version = "0.1.0"
+
+[lib]
+name = "wasm_test"
+crate-type = ["cdylib"]
+
+[dependencies]
+capybara = { path = "../../", features = ["capybara_wasm"] }

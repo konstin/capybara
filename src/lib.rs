@@ -1,14 +1,25 @@
 #![feature(proc_macro, proc_macro_lib, specialization, const_fn)]
 
 extern crate capybara_derive;
-#[warn(missing_docs)]
+#[cfg(feature = "capybara_ruby")]
 pub extern crate helix;
+#[cfg(feature = "capybara_python")]
 pub extern crate pyo3;
+#[cfg(feature = "capybara_python")]
 extern crate pyo3cls;
+#[cfg(feature = "capybara_wasm")]
+pub extern crate wasm_bindgen;
 
 pub use capybara_derive::capybara_bindgen;
 #[cfg(feature = "capybara_python")]
 pub use pyo3cls::mod3init as pyo3_init;
+
+/// It's not allowed to import the same item twice, so we use this module with a star import instead
+#[cfg(feature = "capybara_wasm")]
+pub mod reexport {
+    pub use wasm_bindgen;
+    pub use wasm_bindgen::prelude::*;
+}
 
 /// Creates the FFI entrypoint.
 ///
@@ -23,8 +34,8 @@ pub use pyo3cls::mod3init as pyo3_init;
 /// # Example
 ///
 /// ```
-/// #[class]
-/// #struct MyClass {}
+/// #[capybara_bindgen]
+/// struct MyClass {}
 /// capybara_init! (my_module, [MyClass]);
 /// ```
 ///

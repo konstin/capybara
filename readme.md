@@ -1,6 +1,7 @@
 # capybara
 
-A framework for generating bindings from Rust to arbitrary languages. Currently python and ruby are supported.
+A framework for generating bindings from Rust to arbitrary languages. Currently supports python (via pyo3), ruby
+(via helix) and wasm/js (via wasm_bindgen) are supported.
 
 **Note: This is in alpha stage. It can't do much more than static methods yet.**
 
@@ -72,8 +73,17 @@ is in there.
 
 ### Ruby on Rails (helix)
 
-Follow [helix' getting started guide](https://usehelix.com/getting_started), but replace the lib.rs and cargo
+Follow [helix' great getting started](https://usehelix.com/getting_started), but replace the lib.rs and cargo
 dependencies the ones from this repo.
+
+### Wasm/js (wasm_bindgen)
+
+wasm_bindgen's interface looks essentially the the same way that capybara, so `capybara_bindgen` does essentially the
+same as `wasm_bindgen` even though it supports much less featues.
+[Read wasm_bindgen's awesome getting started](https://github.com/rustwasm/wasm-bindgen) on how to generate bindings.
+Note that `extern` blocks can not use annotations on functions (which are required for e.g. console.log) and that
+`println!()` doesn't print for that target, so you effectively must check the return value of a call into rust in the
+javascript to see whether everything is set up correctly.
 
 ## Features
 

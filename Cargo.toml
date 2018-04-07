@@ -9,14 +9,17 @@ categories = ["api-bindings", "development-tools::ffi"]
 license = "Apache-2.0 OR MIT"
 
 [features]
-capybara_python = ["capybara-derive/capybara_python"]
-capybara_ruby = ["capybara-derive/capybara_ruby"]
+capybara_python = ["capybara-derive/capybara_python", "pyo3", "pyo3cls"]
+capybara_ruby = ["capybara-derive/capybara_ruby", "helix"]
+capybara_wasm = ["capybara-derive/capybara_wasm", "wasm-bindgen"]
 
 [dependencies]
-pyo3 = { path = "pyo3", features = ["extension-module"] }
-helix = { path = "helix" }
+pyo3 = { path = "pyo3", features = ["extension-module"], optional = true }
+helix = { path = "helix", optional = true }
 capybara-derive = { path = "capybara-derive" }
-pyo3cls = { path = "pyo3/pyo3cls" }
+pyo3cls = { path = "pyo3/pyo3cls", optional = true }
+# We need that commit, but hasn't been released yet
+wasm-bindgen = { git  = "https://github.com/rustwasm/wasm-bindgen", rev = "9421edaab5fce92cc901a5afa1dc67d0eae15ac7", optional = true }
 
 [workspace]
 members = [
@@ -25,6 +28,7 @@ members = [
     "tests/helix-test",
     "tests/pyo3-test",
     "tests/stub-test",
+    "tests/wasm-test",
 ]
 
 exclude = [

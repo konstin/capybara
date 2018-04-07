@@ -2,4 +2,6 @@ pyo3/
 helix/
 target/
 venv/
+node_modules/
+tests/wasm-test/wasm_test*
 Cargo.lock

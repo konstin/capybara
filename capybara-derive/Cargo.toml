@@ -4,16 +4,16 @@ name = "capybara-derive"
 version = "0.1.0"
 
 [dependencies]
-log = "0.4"
 quote = "0.3"
-pyo3 = { path = "../pyo3", features = ["extension-module"] }
-pyo3-derive-backend = { path = "../pyo3/pyo3-derive-backend" }
-helix = { path = "../helix" }
+pyo3 = { path = "../pyo3", features = ["extension-module"], optional = true }
+pyo3-derive-backend = { path = "../pyo3/pyo3-derive-backend", optional = true }
+helix = { path = "../helix", optional = true }
 syn = {features = ["full"], version = "0.11"}
 
 [lib]
 proc-macro = true
 
 [features]
-capybara_python = []
-capybara_ruby = []
+capybara_python = ["pyo3", "pyo3-derive-backend"]
+capybara_ruby = ["helix"]
+capybara_wasm = []

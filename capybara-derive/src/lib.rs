@@ -6,17 +6,21 @@
 #![feature(proc_macro, specialization, const_fn)]
 #![recursion_limit = "1024"]
 
+#[cfg(feature = "capybara_ruby")]
 extern crate helix;
-extern crate log;
 extern crate proc_macro;
+#[cfg(feature = "capybara_python")]
 extern crate pyo3;
+#[cfg(feature = "capybara_python")]
 extern crate pyo3_derive_backend;
 #[macro_use]
 extern crate quote;
 extern crate syn;
 
 use proc_macro::TokenStream;
+#[cfg(feature = "capybara_python")]
 use pyo3_derive_backend::py_class::build_py_class;
+#[cfg(feature = "capybara_python")]
 use pyo3_derive_backend::py_impl::build_py_methods;
 use std::str::FromStr;
 // It was just to much bloat
@@ -26,6 +30,8 @@ struct Pyo3Builder;
 
 struct HelixBuilder;
 
+struct WasmBuilder;
+
 /// This is stub target that does not emitt any bindings
 struct StubBuilder;
 
@@ -34,18 +40,22 @@ struct StubBuilder;
 #[proc_macro_attribute]
 pub fn capybara_bindgen(attr: TokenStream, input: TokenStream) -> TokenStream {
     let builder = get_builder();
+
     let ast = parse_item(&input.to_string()).unwrap();
+
+    let input = input.to_string();
+    let attr = attr.to_string();
 
     // Ideally, all libraries would use the same stable syn ^1.0 and expose an interface with syn
     // types, so we could parse once and forward the already extracted parts. But for we let all
     // libraries do their own parsing.
     let generated = match ast.node {
         ItemKind::Fn(_, _, _, _, _, _) => panic!("Sorry, functions aren't supported yet"),
-        ItemKind::ForeignMod(_) => panic!("Sorry, extern block aren't supported yet"),
+        ItemKind::ForeignMod(_) => builder.foreign_mod(attr, input),
         ItemKind::Enum(_, _) => panic!("Sorry, enums aren't supported yet"),
-        ItemKind::Struct(_, _) => builder.class(attr.to_string(), input.to_string()),
+        ItemKind::Struct(_, _) => builder.class(attr, input),
         ItemKind::Trait(_, _, _, _) => panic!("Sorry, trait declarations aren't supported yet"),
-        ItemKind::Impl(_, _, _, _, _, _) => builder.methods(attr.to_string(), input.to_string()),
+        ItemKind::Impl(_, _, _, _, _, _) => builder.methods(attr, input),
         _ => panic!(
             "You can not generate bindings for this kind of item. ({})",
             ast.ident
@@ -56,6 +66,7 @@ pub fn capybara_bindgen(attr: TokenStream, input: TokenStream) -> TokenStream {
 }
 
 /// A workaround for getting feaature-independent typings
+#[allow(unreachable_code)]
 fn get_builder() -> &'static BindingBuilder {
     let features = vec![
         cfg!(feature = "capybara_ruby"),
@@ -70,13 +81,14 @@ fn get_builder() -> &'static BindingBuilder {
         );
     }
 
-    if cfg!(feature = "capybara_ruby") {
-        return &HelixBuilder;
-    } else if cfg!(feature = "capybara_python") {
-        return &Pyo3Builder;
-    } else {
-        return &StubBuilder;
-    }
+    #[cfg(feature = "capybara_ruby")]
+    return &HelixBuilder;
+    #[cfg(feature = "capybara_python")]
+    return &Pyo3Builder;
+    #[cfg(feature = "capybara_wasm")]
+    return &WasmBuilder;
+
+    return &StubBuilder;
 }
 
 /// A language binding is defined by implementing this on a unit struct and the init macro
@@ -84,8 +96,12 @@ fn get_builder() -> &'static BindingBuilder {
 /// All methods get the stringified versions of what the proc_macro_attribute gets. They have to
 /// take a self to make the dynamic dispatch via get_builder() possible
 trait BindingBuilder {
+    /// Gets a struct
     fn class(&self, attr: String, input: String) -> String;
+    /// Gets an impl block
     fn methods(&self, attr: String, input: String) -> String;
+    /// Gets an extern block
+    fn foreign_mod(&self, attr: String, input: String) -> String;
 }
 
 impl BindingBuilder for HelixBuilder {
@@ -154,8 +170,13 @@ impl BindingBuilder for HelixBuilder {
 
         generated
     }
+
+    fn foreign_mod(&self, _: String, _: String) -> String {
+        unimplemented!()
+    }
 }
 
+#[cfg(feature = "capybara_python")]
 /// This is the same boilerplate that pyo3 uses
 impl BindingBuilder for Pyo3Builder {
     fn class(&self, attr: String, input: String) -> String {
@@ -176,8 +197,13 @@ impl BindingBuilder for Pyo3Builder {
             #expanded
         ).to_string()
     }
+
+    fn foreign_mod(&self, _: String, _: String) -> String {
+        unimplemented!()
+    }
 }
 
+#[cfg(feature = "capybara_python")]
 impl Pyo3Builder {
     /// pyo3 expects static methods to be annotated, so let's add that annotation on static methods.
     fn add_function_annotations(ast: &mut Item) {
@@ -211,10 +237,34 @@ impl Pyo3Builder {
 
 impl BindingBuilder for StubBuilder {
     fn class(&self, _: String, input: String) -> String {
-        return input;
+        input
     }
 
     fn methods(&self, _: String, input: String) -> String {
-        return input;
+        input
+    }
+
+    fn foreign_mod(&self, _: String, input: String) -> String {
+        input
+    }
+}
+
+impl WasmBuilder {
+    fn actual_impl(&self, input: String) -> String {
+        quote!(use capybara::reexport::*;).into_string() + "#[wasm_bindgen]" + &input
+    }
+}
+
+impl BindingBuilder for WasmBuilder {
+    fn class(&self, _attr: String, input: String) -> String {
+        self.actual_impl(input)
+    }
+
+    fn methods(&self, _attr: String, input: String) -> String {
+        self.actual_impl(input)
+    }
+
+    fn foreign_mod(&self, _: String, input: String) -> String {
+        self.actual_impl(input)
     }
 }
