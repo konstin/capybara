@@ -7,11 +7,11 @@ extern crate capybara;
 use capybara::capybara_bindgen;
 
 #[capybara_bindgen]
-struct MyClass {}
+pub struct MyClass {}
 
 #[capybara_bindgen]
 impl MyClass {
-    fn add_and_print(x: i32, y: i32) -> i32 {
+    pub fn add_and_print(x: i32, y: i32) -> i32 {
         println!("Printing from rust: {}", x + y);
         x + y
     }

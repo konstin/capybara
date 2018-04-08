@@ -35,7 +35,7 @@ pub mod reexport {
 ///
 /// ```
 /// #[capybara_bindgen]
-/// struct MyClass {}
+/// pub struct MyClass {}
 /// capybara_init! (my_module, [MyClass]);
 /// ```
 ///

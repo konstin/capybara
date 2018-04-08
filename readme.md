@@ -24,7 +24,7 @@ Annotate every class you want to export with `#[class]`, e.g.:
 
 ```rust
 #[capybara_bindgen]
-struct MyClass {}
+pub struct MyClass {}
 ```
 
 Put the methods to be exported into an impl-block and annotate that block with `#[methods]`
@@ -72,7 +72,7 @@ _This feature currently only works with python_
 Capybara needs to rewrite your constructors to make them work with the underlying libraries. Therefore a constructor must be called `new`, there must be no `return` statements inside the function and the instance must be built in the last expression of the function. Example:
 
 ```
-struct MyClass {
+pub struct MyClass {
     x: usize,
     y: i32,
 }
