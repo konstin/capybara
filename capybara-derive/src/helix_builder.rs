@@ -1,5 +1,4 @@
-// It was just to much bloat
-use syn::*;
+use syn_0_11::*;
 
 pub struct HelixBuilder;
 use super::BindingBuilder;

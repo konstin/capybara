@@ -1,13 +1,10 @@
-// This mod uses syn 0.11
-
+use super::BindingBuilder;
 use proc_macro::TokenStream;
 use pyo3_derive_backend::py_class::build_py_class;
 use pyo3_derive_backend::py_impl::build_py_methods;
 use std::str::FromStr;
 
-// It was just to much bloat
-use super::BindingBuilder;
-use syn::*;
+use syn_0_11::*;
 
 pub struct Pyo3Builder;
 

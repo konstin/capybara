@@ -3,4 +3,3 @@ tmp
 *.bundle
 *.so
 vendor/
-lib/

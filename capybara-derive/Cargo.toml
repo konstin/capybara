@@ -4,19 +4,23 @@ name = "capybara-derive"
 version = "0.1.0"
 
 [dependencies]
-quote = "0.3"
+quote = "0.5"
 pyo3 = { path = "../pyo3", features = ["extension-module"], optional = true }
 pyo3-derive-backend = { path = "../pyo3/pyo3-derive-backend", optional = true }
 helix = { path = "../helix", optional = true }
+# We need that commit, but hasn't been released yet
+wasm-bindgen = { git  = "https://github.com/rustwasm/wasm-bindgen", rev = "9421edaab5fce92cc901a5afa1dc67d0eae15ac7", optional = true }
+wasm-bindgen-backend = { git  = "https://github.com/rustwasm/wasm-bindgen", rev = "9421edaab5fce92cc901a5afa1dc67d0eae15ac7", optional = true }
 
 # pyo3 needs syn 0.11, wasm_bindgen needs syn 0.13, so that's where this ugly trick comes in
 syn = {features = ["full"], version = "0.13"}
 syn-0-11 = {path = "../syn-0-11", optional = true}
+quote-0-3 = {path = "../quote-0-3", optional = true}
 
 [lib]
 proc-macro = true
 
 [features]
-capybara_python = ["pyo3", "pyo3-derive-backend", "syn-0-11"]
-capybara_ruby = ["helix", "syn-0-11"]
-capybara_wasm = []
+capybara_python = ["pyo3", "pyo3-derive-backend", "syn-0-11", "quote-0-3"]
+capybara_ruby = ["helix", "syn-0-11", "quote-0-3"]
+capybara_wasm = ["wasm-bindgen", "wasm-bindgen-backend"]

@@ -7,7 +7,7 @@ A framework for generating bindings from Rust to arbitrary languages. Currently 
 
 ## Usage
 
-A nightly compiler is required.
+A nightly compiler <= nightly-2018-04-06 is required (see [this bug](https://github.com/rust-lang/rust/issues/49768)).
 
 The boilerplate:
 
@@ -89,15 +89,14 @@ javascript to see whether everything is set up correctly.
 
  * Empty structs
  * Static methods that do not return errors
- * A default No-op target
+ * Ruby, Python, wasm and a default stub target
 
 ## Missing
 
  * Constructors
  * Functions (in not methods)
- * Integration of wasm_bindgen
  * A CLI that wraps the wasm-bindgen-cli, setuptools-rust and `rails generate helix:crate text_transform`
-  * Windows and Mac OS X (This shouldn't be to much work, mostly porting the tests from bash + python to pure rust)
+ * Windows and Mac OS X (This shouldn't be to much work, mostly porting the tests from bash + python to pure rust)
  * Special methods (equals, comparisons, hashing)
  * Conversions
  * Returning errors

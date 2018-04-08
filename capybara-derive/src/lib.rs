@@ -11,15 +11,22 @@ extern crate helix;
 extern crate proc_macro;
 #[cfg(feature = "capybara_python")]
 extern crate pyo3;
+
 #[cfg(feature = "capybara_python")]
 extern crate pyo3_derive_backend;
+
+#[cfg(not(feature = "quote-0-3"))]
 #[macro_use]
 extern crate quote;
 
-#[cfg(not(feature = "syn-0-11"))]
 extern crate syn;
+
 #[cfg(feature = "syn-0-11")]
-extern crate syn_0_11 as syn;
+extern crate syn_0_11;
+
+#[cfg(feature = "quote-0-3")]
+#[macro_use]
+extern crate quote_0_3;
 
 use proc_macro::TokenStream;
 
@@ -54,37 +61,6 @@ pub fn capybara_bindgen(attr: TokenStream, input: TokenStream) -> TokenStream {
     capybara_bindgen_impl(attr, input)
 }
 
-#[cfg(feature = "syn-0-11")]
-fn capybara_bindgen_impl(attr: TokenStream, input: TokenStream) -> TokenStream {
-    let builder = get_builder();
-
-    let ast = syn::parse_item(&input.to_string()).unwrap();
-
-    let input = input.to_string();
-    let attr = attr.to_string();
-
-    // Ideally, all libraries would use the same stable syn ^1.0 and expose an interface with syn
-    // types, so we could parse once and forward the already extracted parts. But for we let all
-    // libraries do their own parsing.
-    let generated = match ast.node {
-        syn::ItemKind::Fn(_, _, _, _, _, _) => panic!("Sorry, functions aren't supported yet"),
-        syn::ItemKind::ForeignMod(_) => builder.foreign_mod(attr, input),
-        syn::ItemKind::Enum(_, _) => panic!("Sorry, enums aren't supported yet"),
-        syn::ItemKind::Struct(_, _) => builder.class(attr, input),
-        syn::ItemKind::Trait(_, _, _, _) => {
-            panic!("Sorry, trait declarations aren't supported yet")
-        }
-        syn::ItemKind::Impl(_, _, _, _, _, _) => builder.methods(attr, input),
-        _ => panic!(
-            "You can not generate bindings for this kind of item. ({})",
-            ast.ident
-        ),
-    };
-
-    TokenStream::from_str(&generated).unwrap()
-}
-
-#[cfg(not(feature = "syn-0-11"))]
 fn capybara_bindgen_impl(attr: TokenStream, input: TokenStream) -> TokenStream {
     let item: syn::Item = syn::parse(input.clone()).unwrap();
 
@@ -103,13 +79,13 @@ fn capybara_bindgen_impl(attr: TokenStream, input: TokenStream) -> TokenStream {
     TokenStream::from_str(&generated).unwrap()
 }
 
-
 /// A workaround for getting feaature-independent typings
 #[allow(unreachable_code)]
 fn get_builder() -> &'static BindingBuilder {
     let features = vec![
         cfg!(feature = "capybara_ruby"),
         cfg!(feature = "capybara_python"),
+        cfg!(feature = "capybara_wasm"),
     ];
 
     let activated: usize = features.iter().map(|x| *x as usize).sum();
