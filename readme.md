@@ -65,6 +65,29 @@ capybara = { version = "0.1.0", features = ["capybara_python"] }
 You can also specify the target language by omitting the features part and instead passing `--features capybara_ruby` to
 `cargo build`.
 
+### Constructors
+
+_This feature currently only works with python_
+
+Capybara needs to rewrite your constructors to make them work with the underlying libraries. Therefore a constructor must be called `new`, there must be no `return` statements inside the function and the instance must be built in the last expression of the function. Example:
+
+```
+struct MyClass {
+    x: usize,
+    y: i32,
+}
+
+impl MyClass {
+    fn new(x: usize) -> MyClass {
+        println!("Building an instance");
+        MyClass {
+            x,
+            y: -x,
+        }
+    }
+}
+```
+
 ### Python (pyo3)
 
 Python is supported through the library pyo3. After running cargo build, copy the generated `lib<module name>.so` and

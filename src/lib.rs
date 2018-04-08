@@ -49,7 +49,7 @@ macro_rules! capybara_init {
 macro_rules! capybara_init {
     ( $modname:ident, [$( $classname:ty ),*] ) => {
         use $crate::pyo3;
-        use $crate::pyo3::{ObjectProtocol, Python, PyModule, PyResult};
+        use $crate::pyo3::prelude::*;
         #[$crate::pyo3_init($modname)]
         fn capybara_init(_py: Python, m: &PyModule) -> PyResult<()> {
             $(
