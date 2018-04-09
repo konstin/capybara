@@ -14,9 +14,7 @@ pub struct MyClass {
 #[capybara_bindgen]
 impl MyClass {
     pub fn new(number: i32) -> MyClass {
-        MyClass {
-            number
-        }
+        MyClass { number }
     }
 
     pub fn add_and_print(x: i32, y: i32) -> i32 {

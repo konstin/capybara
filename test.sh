@@ -8,7 +8,7 @@ set -ex
 cargo build
 cargo build --features capybara_python
 cargo build --features capybara_ruby
-cargo build --features capybara_wasm
+cargo build --features capybara_wasm --target wasm32-unknown-unknown
 
 cd tests
 

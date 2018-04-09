@@ -21,6 +21,9 @@ pub mod reexport {
     pub use wasm_bindgen::prelude::*;
 }
 
+#[cfg(all(not(target_arch = "wasm32"), feature = "capybara_wasm"))]
+compile_error!("You need to pass --target wasm32-unknown-unknown to compile to wasm");
+
 /// Creates the FFI entrypoint.
 ///
 /// The first parameter is the name of the module, the second the names of the classes to export.
