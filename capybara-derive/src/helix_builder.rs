@@ -3,22 +3,28 @@ use syn_0_11::*;
 pub struct HelixBuilder;
 use super::BindingBuilder;
 
+use proc_macro::TokenStream;
+
+use std::str::FromStr;
+
 impl BindingBuilder for HelixBuilder {
     /// Calls codegen_from_struct!
-    fn class(&self, _: String, input: String) -> String {
-        let item = parse_item(&input).unwrap();
-        quote!(codegen_from_struct! {
+    fn class(&self, _: TokenStream, input: TokenStream) -> TokenStream {
+        let item = parse_item(&input.to_string()).unwrap();
+        let tokens = quote!(codegen_from_struct! {
             #item
-        }).to_string()
+        });
+
+        TokenStream::from_str(tokens.as_str()).unwrap()
     }
 
     /// This parses the methods into a call to codegen_extra_impls!
-    fn methods(&self, _: String, input: String) -> String {
+    fn methods(&self, _: TokenStream, input: TokenStream) -> TokenStream {
         // Really-low-prio-but-would-be-nice: Write this using macros only and then backport to
         // helix
         let mut methods_for_macro = vec![];
 
-        let ast = parse_item(&input).unwrap();
+        let ast = parse_item(&input.to_string()).unwrap();
         let rust_name_class;
         if let ItemKind::Impl(_, _, _, None, ref ty, ref methods) = ast.node {
             rust_name_class = quote!(#ty);
@@ -55,7 +61,7 @@ impl BindingBuilder for HelixBuilder {
             panic!();
         };
 
-        let generated = quote! {
+        let tokens = quote! {
             #ast
             codegen_extra_impls!({
                 type: class,
@@ -65,12 +71,12 @@ impl BindingBuilder for HelixBuilder {
                 struct: (),
                 methods: [#(#methods_for_macro)*]
             });
-        }.into_string();
+        };
 
-        generated
+        TokenStream::from_str(tokens.as_str()).unwrap()
     }
 
-    fn foreign_mod(&self, _: String, _: String) -> String {
+    fn foreign_mod(&self, _: TokenStream, _: TokenStream) -> TokenStream {
         unimplemented!()
     }
 }

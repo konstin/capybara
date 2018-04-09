@@ -5,15 +5,12 @@ use proc_macro::TokenStream;
 use quote::{ToTokens, Tokens};
 use syn;
 
-#[macro_use]
-use quote;
-
 pub struct WasmBuilder;
 
 impl WasmBuilder {
     /// This function is adapted from wasm_bindegen 9723fd, crates/macro/src/lib.rs
-    fn actual_impl(&self, _: String, input: String) -> String {
-        let item = syn::parse_str::<syn::Item>(&input).expect("expected a valid Rust item");
+    fn actual_impl(&self, _: TokenStream, input: TokenStream) -> TokenStream {
+        let item = syn::parse::<syn::Item>(input).expect("expected a valid Rust item");
         // For now no wasm_bindgen attributes are supported
         let opts = backend::ast::BindgenAttrs::default();
 
@@ -23,20 +20,20 @@ impl WasmBuilder {
         program.push_item(item, Some(opts), &mut ret);
         program.to_tokens(&mut ret);
 
-        ret.to_string()
+        ret.into()
     }
 }
 
 impl BindingBuilder for WasmBuilder {
-    fn class(&self, attr: String, input: String) -> String {
+    fn class(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
         self.actual_impl(attr, input)
     }
 
-    fn methods(&self, attr: String, input: String) -> String {
+    fn methods(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
         self.actual_impl(attr, input)
     }
 
-    fn foreign_mod(&self, attr: String, input: String) -> String {
+    fn foreign_mod(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
         self.actual_impl(attr, input)
     }
 }

@@ -5,21 +5,27 @@ use pyo3_derive_backend::py_class::build_py_class;
 use pyo3_derive_backend::py_impl::impl_methods;
 use syn_0_11::*;
 
+use proc_macro::TokenStream;
+
+use std::str::FromStr;
+
 pub struct Pyo3Builder;
 
 /// This is the same boilerplate that pyo3 uses
 impl BindingBuilder for Pyo3Builder {
-    fn class(&self, attr: String, input: String) -> String {
-        let mut ast = parse_derive_input(&input).unwrap();
-        let expanded = build_py_class(&mut ast, attr);
-        quote!(
+    fn class(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
+        let mut ast = parse_derive_input(&input.to_string()).unwrap();
+        let expanded = build_py_class(&mut ast, attr.to_string());
+        let tokens = quote!(
             #ast
             #expanded
-        ).to_string()
+        );
+
+        TokenStream::from_str(tokens.as_str()).unwrap()
     }
 
-    fn methods(&self, _: String, input: String) -> String {
-        let mut ast = parse_item(&input).unwrap();
+    fn methods(&self, _: TokenStream, input: TokenStream) -> TokenStream {
+        let mut ast = parse_item(&input.to_string()).unwrap();
 
         let expanded = if let ItemKind::Impl(_, _, _, None, ref ty, ref mut methods) = ast.node {
             let classname = ty.clone();
@@ -58,10 +64,10 @@ impl BindingBuilder for Pyo3Builder {
             #expanded
         );
 
-        tokens.to_string()
+        TokenStream::from_str(tokens.as_str()).unwrap()
     }
 
-    fn foreign_mod(&self, _: String, _: String) -> String {
+    fn foreign_mod(&self, _: TokenStream, _: TokenStream) -> TokenStream {
         unimplemented!()
     }
 }
