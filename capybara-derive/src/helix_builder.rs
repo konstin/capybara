@@ -1,21 +1,19 @@
-use syn_0_11::*;
+use proc_macro::TokenStream;
+use super::BindingBuilder;
+use syn;
 
 pub struct HelixBuilder;
-use super::BindingBuilder;
-
-use proc_macro::TokenStream;
-
-use std::str::FromStr;
 
 impl BindingBuilder for HelixBuilder {
     /// Calls codegen_from_struct!
     fn class(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let item = parse_item(&input.to_string()).unwrap();
+        let class: syn::ItemStruct = syn::parse(input).unwrap();
+
         let tokens = quote!(codegen_from_struct! {
-            #item
+            #class
         });
 
-        TokenStream::from_str(tokens.as_str()).unwrap()
+        tokens.into()
     }
 
     /// This parses the methods into a call to codegen_extra_impls!
@@ -24,45 +22,43 @@ impl BindingBuilder for HelixBuilder {
         // helix
         let mut methods_for_macro = vec![];
 
-        let ast = parse_item(&input.to_string()).unwrap();
+        let impl_block: syn::ItemImpl = syn::parse(input).unwrap();
         let rust_name_class;
-        if let ItemKind::Impl(_, _, _, None, ref ty, ref methods) = ast.node {
-            rust_name_class = quote!(#ty);
-            for method in methods {
-                let rust_name = &method.ident;
-                if let ImplItemKind::Method(ref method_sig, ref body) = &method.node {
-                    let input = &method_sig.decl.inputs;
-                    let output = match method_sig.decl.output {
-                        FunctionRetTy::Default => quote!(()),
-                        FunctionRetTy::Ty(ref ty) => quote!(#ty),
-                    };
+        rust_name_class = impl_block.self_ty.clone();
+        for item in &impl_block.items {
+            if let syn::ImplItem::Method(method) = item {
+                let rust_name = &method.sig.ident;
+                let input = &method.sig.decl.inputs;
+                let body = &method.block;
 
-                    let method_type = match method_sig.decl.inputs.get(0) {
-                        Some(FnArg::SelfRef(_, _)) | Some(FnArg::SelfValue(_)) => {
-                            quote!(instance_method)
-                        }
-                        _ => quote!(class_method),
-                    };
+                let output = match method.sig.decl.output {
+                    syn::ReturnType::Default => quote!(()),
+                    syn::ReturnType::Type(_, ref ty) => quote!(#ty),
+                };
 
-                    methods_for_macro.push(quote!({
-                        type: #method_type,
-                        rust_name: #rust_name,
-                        ruby_name: { stringify!(#rust_name) },
-                        self: (),
-                        args: [ #(#input),* ] ,
-                        ret: { #output },
-                        body: #body
-                    }));
-                } else {
-                    panic!();
-                }
+                let method_type = match method.sig.decl.inputs.first().map(syn::punctuated::Pair::into_value) {
+                    Some(syn::FnArg::SelfRef(_)) | Some(syn::FnArg::SelfValue(_)) => {
+                        quote!(instance_method)
+                    }
+                    _ => quote!(class_method),
+                };
+
+                methods_for_macro.push(quote!({
+                    type: #method_type,
+                    rust_name: #rust_name,
+                    ruby_name: { stringify!(#rust_name) },
+                    self: (),
+                    args: [ #(#input),* ] ,
+                    ret: { #output },
+                    body: #body
+                }));
+            } else {
+                panic!();
             }
-        } else {
-            panic!();
-        };
+        }
 
         let tokens = quote! {
-            #ast
+            #impl_block
             codegen_extra_impls!({
                 type: class,
                 rust_name: #rust_name_class,
@@ -73,7 +69,7 @@ impl BindingBuilder for HelixBuilder {
             });
         };
 
-        TokenStream::from_str(tokens.as_str()).unwrap()
+        tokens.into()
     }
 
     fn foreign_mod(&self, _: TokenStream, _: TokenStream) -> TokenStream {

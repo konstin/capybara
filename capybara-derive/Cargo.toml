@@ -23,5 +23,5 @@ proc-macro = true
 
 [features]
 capybara_python = ["pyo3", "pyo3-derive-backend", "syn-0-11", "quote-0-3"]
-capybara_ruby = ["helix", "syn-0-11", "quote-0-3"]
+capybara_ruby = ["helix"]
 capybara_wasm = ["wasm-bindgen", "wasm-bindgen-backend"]
