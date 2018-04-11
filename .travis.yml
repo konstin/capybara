@@ -1,13 +1,12 @@
 language: rust
 rust:
-  - nightly
+  - nightly-2018-04-06
 
 cache: cargo
 
 install:
-  - rustup default nightly-2018-04-06
   - git clone https://github.com/konstin/pyo3
-  - cd reusable_codegen
+  - cd pyo3
   - git checkout reusable_codegen
   - cd ..
   - git clone https://github.com/konstin/helix
