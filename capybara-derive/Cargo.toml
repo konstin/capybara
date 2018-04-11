@@ -13,8 +13,8 @@ wasm-bindgen = { git  = "https://github.com/rustwasm/wasm-bindgen", rev = "9421e
 wasm-bindgen-backend = { git  = "https://github.com/rustwasm/wasm-bindgen", rev = "9421edaab5fce92cc901a5afa1dc67d0eae15ac7", optional = true }
 
 # pyo3 needs syn 0.11, wasm_bindgen needs syn 0.13, so that's where this ugly trick comes in
-syn-0-11 = {path = "../syn-0-11", optional = true}
-quote-0-3 = {path = "../quote-0-3", optional = true}
+syn-0-11 = {path = "syn-0-11", optional = true}
+quote-0-3 = {path = "quote-0-3", optional = true}
 syn = {features = ["full"], version = "0.13"}
 proc-macro2 = { version = "0.3", features = ["nightly"] }
 
@@ -22,6 +22,6 @@ proc-macro2 = { version = "0.3", features = ["nightly"] }
 proc-macro = true
 
 [features]
-capybara_python = ["pyo3", "pyo3-derive-backend", "syn-0-11", "quote-0-3"]
-capybara_ruby = ["helix"]
-capybara_wasm = ["wasm-bindgen", "wasm-bindgen-backend"]
+python = ["pyo3", "pyo3-derive-backend", "syn-0-11", "quote-0-3"]
+ruby = ["helix"]
+wasm = ["wasm-bindgen", "wasm-bindgen-backend"]

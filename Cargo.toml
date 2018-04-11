@@ -9,9 +9,9 @@ categories = ["api-bindings", "development-tools::ffi"]
 license = "Apache-2.0 OR MIT"
 
 [features]
-capybara_python = ["capybara-derive/capybara_python", "pyo3", "pyo3cls"]
-capybara_ruby = ["capybara-derive/capybara_ruby", "helix"]
-capybara_wasm = ["capybara-derive/capybara_wasm", "wasm-bindgen"]
+python = ["capybara-derive/python", "pyo3", "pyo3cls"]
+ruby = ["capybara-derive/ruby", "helix"]
+wasm = ["capybara-derive/wasm", "wasm-bindgen"]
 
 [dependencies]
 pyo3 = { path = "pyo3", features = ["extension-module"], optional = true }
@@ -24,8 +24,8 @@ wasm-bindgen = { git  = "https://github.com/rustwasm/wasm-bindgen", rev = "9421e
 [workspace]
 members = [
     "capybara-derive",
-    "syn-0-11",
-    "quote-0-3",
+    "capybara-derive/syn-0-11",
+    "capybara-derive/quote-0-3",
     "capybara-test",
 ]
 

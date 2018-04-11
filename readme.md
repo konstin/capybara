@@ -56,15 +56,15 @@ name = "<Name of the module you used in capybara_inti!>"
 crate-type = ["cdylib"]
 ```
 
-If only target a single language, you can use the `features` option. "capybara_python" is for python, "capybara_ruby" is for ruby.
+If only target a single language, you can use the `features` option. "python" is for python, "ruby" is for ruby.
 Note that these options are mutually exclusive.
 
 ```
 [dependencies]
-capybara = { version = "0.1.0", features = ["capybara_python"] }
+capybara = { version = "0.1.0", features = ["python"] }
 ```
 
-You can also specify the target language by omitting the features part and instead passing `--features capybara_ruby` to
+You can also specify the target language by omitting the features part and instead passing `--features ruby` to
 `cargo build`.
 
 ### Constructors

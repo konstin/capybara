@@ -1,9 +1,12 @@
 //! Beware, lands of ugly syn 0.11 code wrapping an ugly library lie ahead of you
 
+extern crate pyo3;
+extern crate pyo3_derive_backend;
+extern crate syn_0_11;
+
+
 use super::BindingBuilder;
-use pyo3_derive_backend::py_class::build_py_class;
-use pyo3_derive_backend::py_impl::impl_methods;
-use syn_0_11::*;
+use self::syn_0_11::*;
 
 use proc_macro::TokenStream;
 
@@ -15,7 +18,7 @@ pub struct Pyo3Builder;
 impl BindingBuilder for Pyo3Builder {
     fn class(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
         let mut ast = parse_derive_input(&input.to_string()).unwrap();
-        let expanded = build_py_class(&mut ast, attr.to_string());
+        let expanded = pyo3_derive_backend::py_class::build_py_class(&mut ast, attr.to_string());
         let tokens = quote!(
             #ast
             #expanded
@@ -40,7 +43,7 @@ impl BindingBuilder for Pyo3Builder {
                 None
             };
 
-            let expanded = impl_methods(ty, methods);
+            let expanded = pyo3_derive_backend::py_impl::impl_methods(ty, methods);
 
             // Add the initial new method back
             let expanded = if let Some(new_method_impl) = rust_new {
@@ -72,7 +75,7 @@ impl BindingBuilder for Pyo3Builder {
     }
 }
 
-#[cfg(feature = "capybara_python")]
+#[cfg(feature = "python")]
 impl Pyo3Builder {
     /// pyo3 expects static methods to be annotated, so let's add that annotation on static methods.
     fn add_function_annotations(methods: &mut Vec<ImplItem>) {

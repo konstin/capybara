@@ -11,6 +11,6 @@ crate-type = ["cdylib"]
 capybara = { path = "../" }
 
 [features]
-capybara-python = ["capybara/capybara_python"]
-capybara-ruby = ["capybara/capybara_ruby"]
-capybara-wasm = ["capybara/capybara_wasm"]
+capybara-python = ["capybara/python"]
+capybara-ruby = ["capybara/ruby"]
+capybara-wasm = ["capybara/wasm"]

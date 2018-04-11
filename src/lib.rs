@@ -1,29 +1,29 @@
 #![feature(proc_macro, proc_macro_lib, specialization, const_fn)]
 
 extern crate capybara_derive;
-#[cfg(feature = "capybara_ruby")]
+#[cfg(feature = "ruby")]
 pub extern crate helix;
-#[cfg(feature = "capybara_python")]
+#[cfg(feature = "python")]
 pub extern crate pyo3;
-#[cfg(feature = "capybara_python")]
+#[cfg(feature = "python")]
 extern crate pyo3cls;
-#[cfg(feature = "capybara_wasm")]
+#[cfg(feature = "wasm")]
 pub extern crate wasm_bindgen;
 
 pub use capybara_derive::capybara_bindgen;
-#[cfg(feature = "capybara_ruby")]
+#[cfg(feature = "ruby")]
 pub use helix::Metadata;
-#[cfg(feature = "capybara_python")]
+#[cfg(feature = "python")]
 pub use pyo3cls::mod3init as pyo3_init;
 
 /// It's not allowed to import the same item twice, so we use this module with a star import instead
-#[cfg(feature = "capybara_wasm")]
+#[cfg(feature = "wasm")]
 pub mod reexport {
     pub use wasm_bindgen;
     pub use wasm_bindgen::prelude::*;
 }
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "capybara_wasm"))]
+#[cfg(all(not(target_arch = "wasm32"), feature = "wasm"))]
 compile_error!("You need to pass --target wasm32-unknown-unknown to compile to wasm");
 
 /// Creates the FFI entrypoint.
@@ -49,7 +49,7 @@ macro_rules! capybara_init {
     () => {};
 }
 
-#[cfg(feature = "capybara_python")]
+#[cfg(feature = "python")]
 #[macro_export]
 macro_rules! capybara_init {
     ( $modname:ident, [$( $classname:ty ),*] ) => {
@@ -65,7 +65,7 @@ macro_rules! capybara_init {
     };
 }
 
-#[cfg(feature = "capybara_ruby")]
+#[cfg(feature = "ruby")]
 #[macro_export]
 macro_rules! capybara_init {
     { $modname:ident, [$( $classname:ident ),*] } => {
@@ -73,7 +73,7 @@ macro_rules! capybara_init {
     }
 }
 
-#[cfg(not(any(feature = "capybara_python", feature = "capybara_ruby")))]
+#[cfg(not(any(feature = "python", feature = "ruby")))]
 #[macro_export]
 macro_rules! capybara_init {
     { $modname:ident, [$( $classname:ident ),*] } => {
@@ -87,7 +87,7 @@ macro_rules! capybara_init {
 /// The only catch here is that the other helix macros (and especially codegen_struct!) are defined
 /// in the helix crate, so we need to get them into scope. The current use $crate::helix::*; works,
 /// though there's surely something more elegant.
-#[cfg(feature = "capybara_ruby")]
+#[cfg(feature = "ruby")]
 #[macro_export]
 macro_rules! codegen_from_struct {
     {
