@@ -8,6 +8,8 @@ task :test => :build do
     def assert &block
 	    raise AssertionError unless yield
     end
-    x = MyClass.add_and_print(21, 21)
+    x = ExportedClass.add_and_print(21, 21)
     assert { x == 42 }
+    y = ExportedClass.new 1337
+    assert { y.get_number == 1337 }
 end

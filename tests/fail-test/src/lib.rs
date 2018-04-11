@@ -6,14 +6,14 @@ extern crate capybara;
 use capybara::capybara_bindgen;
 
 #[capybara_bindgen]
-pub struct MyClass {}
+pub struct ExportedClass {}
 
 #[capybara_bindgen]
-impl MyClass {
+impl ExportedClass {
     pub fn add_and_print(x: i32, y: i32) -> i32 {
         println!("Printing from rust: {}", x + y);
         x + y
     }
 }
 
-capybara_init! {fail_test, [MyClass]}
+capybara_init! {fail_test, [ExportedClass]}

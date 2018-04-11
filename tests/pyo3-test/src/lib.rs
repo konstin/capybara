@@ -6,14 +6,14 @@ extern crate capybara;
 use capybara::capybara_bindgen;
 
 #[capybara_bindgen]
-pub struct MyClass {
+pub struct ExportedClass {
     number: i32,
 }
 
 #[capybara_bindgen]
-impl MyClass {
-    pub fn new(number: i32) -> MyClass {
-        MyClass { number }
+impl ExportedClass {
+    pub fn new(number: i32) -> ExportedClass {
+        ExportedClass { number }
     }
 
     pub fn add_and_print(x: i32, y: i32) -> i32 {
@@ -26,4 +26,4 @@ impl MyClass {
     }
 }
 
-capybara_init! {pyo3_test, [MyClass]}
+capybara_init! {pyo3_test, [ExportedClass]}

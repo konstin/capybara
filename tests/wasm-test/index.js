@@ -1,6 +1,6 @@
-const {MyClass} = require("./wasm_test");
+const {ExportedClass} = require("./wasm_test");
 
-let x = MyClass.add_and_print(21, 21);
+let x = ExportedClass.add_and_print(21, 21);
 console.log(x);
-let instance = MyClass.new(42);
+let instance = ExportedClass.new(42);
 console.log(instance.get_number());

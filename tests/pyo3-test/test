@@ -20,9 +20,9 @@ def main():
 
     my_module = import_module(python_module_name)
 
-    x = my_module.MyClass.add_and_print(21, 21)
+    x = my_module.ExportedClass.add_and_print(21, 21)
     assert x == 42
-    assert 42 == my_module.MyClass(42).get_number()
+    assert 42 == my_module.ExportedClass(42).get_number()
 
     os.remove(python_so_name)
 

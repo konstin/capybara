@@ -1,5 +1,7 @@
 # capybara
 
+[![Supported rust version](https://img.shields.io/badge/rustc-nightly--2018--04--06-red.svg?style=flat-square)](https://github.com/rust-lang/rust/issues/49768)
+
 A framework for generating bindings from Rust to arbitrary languages. Currently supports python (via pyo3), ruby
 (via helix) and wasm/js (via wasm_bindgen) are supported.
 
@@ -24,14 +26,14 @@ Annotate every class you want to export with `#[class]`, e.g.:
 
 ```rust
 #[capybara_bindgen]
-pub struct MyClass {}
+pub struct ExportedClass {}
 ```
 
 Put the methods to be exported into an impl-block and annotate that block with `#[methods]`
 
 ```rust
 #[capybara_bindgen]
-impl MyClass {
+impl ExportedClass {
     fn print_and_add(x: i32, y: i32) -> i32 {
         println!("Printing from rust: {}", x + y);
         x + y
@@ -43,7 +45,7 @@ Finally, we need to generate an extrypoint for module/package on the target site
 with the name of module/package and the names of the structs to generate classes form.
 
 ```rust
-capybara_init! {capybara_test, [MyClass]}
+capybara_init! {capybara_test, [ExportedClass]}
 ```
 
 Add the following to your Cargo.toml:
@@ -72,15 +74,15 @@ _This feature currently only works with python_
 Capybara needs to rewrite your constructors to make them work with the underlying libraries. Therefore a constructor must be called `new`, there must be no `return` statements inside the function and the instance must be built in the last expression of the function. Example:
 
 ```
-pub struct MyClass {
+pub struct ExportedClass {
     x: usize,
     y: i32,
 }
 
-impl MyClass {
-    fn new(x: usize) -> MyClass {
+impl ExportedClass {
+    fn new(x: usize) -> ExportedClass {
         println!("Building an instance");
-        MyClass {
+        ExportedClass {
             x,
             y: -x,
         }
@@ -110,22 +112,25 @@ javascript to see whether everything is set up correctly.
 
 ## Features
 
- * Empty structs
- * Static methods that do not return errors
+ * Structs declarations with and without fields
+ * methods, both static and taking &self, that do not return errors
  * Ruby, Python, wasm and a default stub target
+ * Constructors (See restrictions below)
 
 ## Missing
 
- * Constructors
  * Functions (in not methods)
+ * &mut self and bare self (The latter iirc isn't supported in helix)
+ * Lift restrictions on constructors: Allow arbitrary returns by traversion the ast
  * A CLI that wraps the wasm-bindgen-cli, setuptools-rust and `rails generate helix:crate text_transform`
- * Windows and Mac OS X (This shouldn't be to much work, mostly porting the tests from bash + python to pure rust)
+ * Rewrite test.sh in rust and generating a various cases
+ * Windows and Mac OS X (The proc macro itself should work, the tests should pass on mac os x)
  * Special methods (equals, comparisons, hashing)
  * Conversions
  * Returning errors
  * Exporting trait implementations
  * Importing via extern blocks
- * Better interface for adding languages
+ * Review the BindingBuilder trait for better interface options
 
 ## Testing
 

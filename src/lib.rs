@@ -11,6 +11,8 @@ extern crate pyo3cls;
 pub extern crate wasm_bindgen;
 
 pub use capybara_derive::capybara_bindgen;
+#[cfg(feature = "capybara_ruby")]
+pub use helix::Metadata;
 #[cfg(feature = "capybara_python")]
 pub use pyo3cls::mod3init as pyo3_init;
 
@@ -38,8 +40,8 @@ compile_error!("You need to pass --target wasm32-unknown-unknown to compile to w
 ///
 /// ```
 /// #[capybara_bindgen]
-/// pub struct MyClass {}
-/// capybara_init! (my_module, [MyClass]);
+/// pub struct ExportedClass {}
+/// capybara_init! (my_module, [ExportedClass]);
 /// ```
 ///
 #[macro_export]
