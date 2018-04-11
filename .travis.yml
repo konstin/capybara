@@ -12,6 +12,8 @@ install:
 - git checkout split_out_init
 - cd ..
 - rustup target add wasm32-unknown-unknown
+- mkdir -p "$(rbenv root)"/plugins
+- git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
 
 # Installing the different toolchains
 
