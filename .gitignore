@@ -3,6 +3,7 @@ helix/
 target/
 venv/
 node_modules/
-capybara-test/wasm_test*
+capybara-test/capybara_test*
 capybara-test/vendor
+capybara-test/lib/capybara-test
 Cargo.lock

@@ -4,8 +4,8 @@
 
 set -ex
 
-cargo build --target wasm32-unknown-unknown
+cargo build --target wasm32-unknown-unknown --features capybara-wasm
 
-wasm-bindgen ../target/wasm32-unknown-unknown/debug/wasm_test.wasm --out-dir . --nodejs --debug
+wasm-bindgen ../target/wasm32-unknown-unknown/debug/capybara_test.wasm --out-dir . --nodejs --debug
 
-node index.js | grep -q 42 && echo "OK" || echo "FAILURE"
+node index.js

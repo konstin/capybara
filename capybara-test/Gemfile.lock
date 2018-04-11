@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    helix-test (1.0.0)
+    capybara-test (1.0.0)
       helix_runtime (~> 0.7.3)
 
 GEM
@@ -19,7 +19,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  helix-test!
+  capybara-test!
 
 BUNDLED WITH
    1.16.1

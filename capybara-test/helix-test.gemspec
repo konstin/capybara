@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 Gem::Specification.new do |s|
-  s.name         = 'helix-test'
+  s.name         = 'capybara-test'
   s.version      = '1.0.0'
   s.authors      = ['Ruby Developer']
   s.summary      = "A Helix project"
