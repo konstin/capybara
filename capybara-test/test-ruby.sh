@@ -2,6 +2,6 @@
 
 set -ex
 
-cargo build
+bundle install > /dev/null
 DEBUG_RUST=true rake test
 

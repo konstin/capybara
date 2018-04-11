@@ -1,5 +1,4 @@
 #![feature(proc_macro, specialization, const_fn)]
-#![feature(wasm_import_module, wasm_custom_section)]
 
 #[macro_use]
 extern crate capybara;
@@ -27,4 +26,4 @@ impl ExportedClass {
     }
 }
 
-capybara_init! {wasm_test, [ExportedClass]}
+capybara_init! {capybara_test, [ExportedClass]}

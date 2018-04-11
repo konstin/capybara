@@ -9,7 +9,7 @@ from shutil import copyfile
 
 
 def main():
-    subprocess.check_call(shlex.split("cargo build"))
+    subprocess.check_call(shlex.split("cargo build --features capybara-python"))
 
     metadata = json.loads(subprocess.check_output(shlex.split("cargo metadata --format-version 1")))
     python_module_name = metadata["resolve"]["root"].split(" ")[0].replace("-", "_")

@@ -3,15 +3,15 @@
 
 set -ex
 
-# Those build will be reused by the tests
+# Those builds will be reused by the tests
 
 cargo build
 cargo build --features capybara_python
 cargo build --features capybara_ruby
 cargo build --features capybara_wasm --target wasm32-unknown-unknown
 
-cd tests
+cd capybara-test
 
-for I in ./*; do
-    cd $I; ./test; cd ..
+for I in ./test-*;
+    do $I;
 done

@@ -6,6 +6,6 @@ set -ex
 
 cargo build --target wasm32-unknown-unknown
 
-wasm-bindgen ../../target/wasm32-unknown-unknown/debug/wasm_test.wasm --out-dir . --nodejs --debug
+wasm-bindgen ../target/wasm32-unknown-unknown/debug/wasm_test.wasm --out-dir . --nodejs --debug
 
 node index.js | grep -q 42 && echo "OK" || echo "FAILURE"

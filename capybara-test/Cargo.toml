@@ -1,0 +1,16 @@
+[package]
+authors = ["konstin <konstin@mailbox.org>"]
+name = "capybara-test"
+version = "0.1.0"
+
+[lib]
+name = "capybara_test"
+crate-type = ["cdylib"]
+
+[dependencies]
+capybara = { path = "../" }
+
+[features]
+capybara-python = ["capybara/capybara_python"]
+capybara-ruby = ["capybara/capybara_ruby"]
+capybara-wasm = ["capybara/capybara_wasm"]

@@ -26,11 +26,7 @@ members = [
     "capybara-derive",
     "syn-0-11",
     "quote-0-3",
-    "tests/fail-test",
-    "tests/helix-test",
-    "tests/pyo3-test",
-    "tests/stub-test",
-    "tests/wasm-test",
+    "capybara-test",
 ]
 
 exclude = [
