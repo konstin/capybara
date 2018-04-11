@@ -18,6 +18,7 @@ git clone https://github.com/pyenv/pyenv.git ~/.pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 
+## The actual targets
 rustup target add wasm32-unknown-unknown
 rbenv install 2.5.1
 pyenv install 3.5.5
