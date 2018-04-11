@@ -2,7 +2,16 @@ language: rust
 rust:
   - nightly-2018-04-06
 
-cache: cargo
+addons:
+  apt:
+    sources:
+      - deadsnakes
+    packages:
+      - python3.5
+
+cache:
+  - cargo
+  - apt
 
 install:
   - git clone https://github.com/konstin/pyo3
@@ -15,4 +24,5 @@ install:
   - cd ..
 
 script:
+  - alias python3=python3.5
   - ./test.sh
