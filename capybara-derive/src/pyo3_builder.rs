@@ -4,12 +4,9 @@ extern crate pyo3;
 extern crate pyo3_derive_backend;
 extern crate syn_0_11;
 
-
-use super::BindingBuilder;
 use self::syn_0_11::*;
-
+use super::BindingBuilder;
 use proc_macro::TokenStream;
-
 use std::str::FromStr;
 
 pub struct Pyo3Builder;

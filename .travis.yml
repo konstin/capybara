@@ -31,6 +31,7 @@ install:
 - rbenv local 2.5.1
 - pyenv install 3.5.5
 - pyenv local 3.5.5
+- python3 -V
 - nvm install 8
 - nvm use 8
 

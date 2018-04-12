@@ -10,7 +10,7 @@ cargo build --features python
 cargo build --features ruby
 cargo build --features wasm --target wasm32-unknown-unknown
 
-cd capybara-test
+cd tests
 
 for I in ./test-*;
     do $I;

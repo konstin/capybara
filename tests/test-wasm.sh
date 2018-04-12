@@ -4,7 +4,7 @@
 
 set -ex
 
-cargo build --target wasm32-unknown-unknown --features capybara-wasm
+cargo build --target wasm32-unknown-unknown --features capybara/wasm
 
 wasm-bindgen ../target/wasm32-unknown-unknown/debug/capybara_test.wasm --out-dir . --nodejs --debug
 

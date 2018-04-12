@@ -26,7 +26,7 @@ members = [
     "capybara-derive",
     "capybara-derive/syn-0-11",
     "capybara-derive/quote-0-3",
-    "capybara-test",
+    "tests",
 ]
 
 exclude = [

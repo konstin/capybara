@@ -9,8 +9,3 @@ crate-type = ["cdylib"]
 
 [dependencies]
 capybara = { path = "../" }
-
-[features]
-capybara-python = ["capybara/python"]
-capybara-ruby = ["capybara/ruby"]
-capybara-wasm = ["capybara/wasm"]
