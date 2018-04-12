@@ -27,6 +27,7 @@ members = [
     "capybara-derive/syn-0-11",
     "capybara-derive/quote-0-3",
     "tests",
+    "compare-codegen/*/",
 ]
 
 exclude = [

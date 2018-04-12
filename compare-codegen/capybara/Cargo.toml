@@ -1,0 +1,11 @@
+[package]
+name = "compare-codegen-capybara"
+version = "0.1.0"
+authors = ["konstin <konstin@mailbox.org>"]
+
+[lib]
+name = "compare_codegen_capybara"
+crate-type = ["cdylib"]
+
+[dependencies]
+capybara = { path = "../.." }

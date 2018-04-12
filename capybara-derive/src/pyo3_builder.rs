@@ -29,11 +29,11 @@ impl BindingBuilder for Pyo3Builder {
 
         let expanded = if let ItemKind::Impl(_, _, _, None, ref ty, ref mut methods) = ast.node {
             let classname = ty.clone();
-            let news = Pyo3Builder::constructor(methods, &classname);
+            let constructor = Pyo3Builder::constructor(methods, &classname);
             Pyo3Builder::add_function_annotations(methods);
 
-            let rust_new = if let Some((rust_new, pyo3_new)) = news {
-                methods.push(pyo3_new);
+            let rust_new = if let Some((rust_new, pyo3_new, rust_new_pos)) = constructor {
+                methods.insert(rust_new_pos, pyo3_new);
 
                 Some(rust_new)
             } else {
@@ -103,14 +103,17 @@ impl Pyo3Builder {
     ///
     /// The rust new will be removed from the method list and returned together with the generated
     /// pyo3 one
-    fn constructor(methods: &mut Vec<ImplItem>, classnamen: &Ty) -> Option<(ImplItem, ImplItem)> {
+    fn constructor(
+        methods: &mut Vec<ImplItem>,
+        classnamen: &Ty,
+    ) -> Option<(ImplItem, ImplItem, usize)> {
         let rust_new_pos = methods
             .iter()
             .position(|method| method.ident == Ident::new("new"));
 
-        let rust_new = match rust_new_pos {
+        let (rust_new, rust_new_pos) = match rust_new_pos {
             // pyo3 can't deal with that method, so we remove it
-            Some(pos) => methods.remove(pos),
+            Some(pos) => (methods.remove(pos), pos),
             None => return None,
         };
 
@@ -159,6 +162,6 @@ impl Pyo3Builder {
             panic!();
         };
 
-        Some((rust_new, pyo3_new))
+        Some((rust_new, pyo3_new, rust_new_pos))
     }
 }

@@ -1,0 +1,7 @@
+[package]
+authors = ["konstin <konstin@mailbox.org>"]
+name = "compare-codegen-wasm"
+version = "0.1.0"
+
+[dependencies]
+wasm-bindgen = "0.2.1"
