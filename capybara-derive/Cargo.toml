@@ -8,9 +8,8 @@ quote = "0.5"
 pyo3 = { path = "../pyo3", features = ["extension-module"], optional = true }
 pyo3-derive-backend = { path = "../pyo3/pyo3-derive-backend", optional = true }
 helix = { path = "../helix", optional = true }
-# We need that commit, but hasn't been released yet
-wasm-bindgen = { git  = "https://github.com/rustwasm/wasm-bindgen", rev = "9421edaab5fce92cc901a5afa1dc67d0eae15ac7", optional = true }
-wasm-bindgen-backend = { git  = "https://github.com/rustwasm/wasm-bindgen", rev = "9421edaab5fce92cc901a5afa1dc67d0eae15ac7", optional = true }
+wasm-bindgen = { version = "0.2.5", optional = true }
+wasm-bindgen-backend = { version = "0.2.5", optional = true }
 
 # pyo3 needs syn 0.11, wasm_bindgen needs syn 0.13, so that's where this ugly trick comes in
 syn-0-11 = {path = "syn-0-11", optional = true}

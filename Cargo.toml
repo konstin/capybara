@@ -18,8 +18,7 @@ pyo3 = { path = "pyo3", features = ["extension-module"], optional = true }
 helix = { path = "helix", optional = true }
 capybara-derive = { path = "capybara-derive" }
 pyo3cls = { path = "pyo3/pyo3cls", optional = true }
-# We need that commit, but hasn't been released yet
-wasm-bindgen = { git  = "https://github.com/rustwasm/wasm-bindgen", rev = "9421edaab5fce92cc901a5afa1dc67d0eae15ac7", optional = true }
+wasm-bindgen = { version = "0.2.5", optional = true }
 
 [workspace]
 members = [

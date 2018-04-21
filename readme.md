@@ -2,10 +2,10 @@
 
 [![Supported rust version](https://img.shields.io/badge/rustc-nightly--2018--04--06-red.svg?style=flat-square)](https://github.com/rust-lang/rust/issues/49768)
 
-A framework for generating bindings from Rust to arbitrary languages. Currently supports python (via pyo3), ruby
-(via helix) and wasm/js (via wasm_bindgen) are supported.
+A framework for generating bindings from Rust to arbitrary languages. Currently supports python (via [pyo3](https://github.com/PyO3/pyo3)), ruby
+(via [helix](https://github.com/tildeio/helix)) and wasm/js (via [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)) are supported.
 
-**Note: This is in alpha stage. It can't do much more than static methods yet.**
+**Note: This is in alpha stage. You can't do much more than structs and methods with the basic types yet.**
 
 ## Usage
 
@@ -22,16 +22,12 @@ extern crate capybara;
 use capybara::capybara_bindgen;
 ```
 
-Annotate every class you want to export with `#[class]`, e.g.:
+Annotate every struct and every methods block you want to export with `#[capybara_bindgen]`, e.g.:
 
 ```rust
 #[capybara_bindgen]
 pub struct ExportedClass {}
-```
 
-Put the methods to be exported into an impl-block and annotate that block with `#[methods]`
-
-```rust
 #[capybara_bindgen]
 impl ExportedClass {
     fn print_and_add(x: i32, y: i32) -> i32 {
@@ -41,7 +37,7 @@ impl ExportedClass {
 }
 ```
 
-Finally, we need to generate an extrypoint for module/package on the target site. This is done by calling capybara_init!
+We also need to generate an extrypoint for module/package on the target site. This is done by calling `capybara_init!`
 with the name of module/package and the names of the structs to generate classes form.
 
 ```rust
@@ -56,7 +52,7 @@ name = "<Name of the module you used in capybara_inti!>"
 crate-type = ["cdylib"]
 ```
 
-If only target a single language, you can use the `features` option. "python" is for python, "ruby" is for ruby.
+If only target a single language, you can use the `features` option. Available are "python", "ruby" and "wasm".
 Note that these options are mutually exclusive.
 
 ```
@@ -64,60 +60,38 @@ Note that these options are mutually exclusive.
 capybara = { version = "0.1.0", features = ["python"] }
 ```
 
-You can also specify the target language by omitting the features part and instead passing `--features ruby` to
-`cargo build`.
-
-### Constructors
-
-_This feature currently only works with python_
-
-Capybara needs to rewrite your constructors to make them work with the underlying libraries. Therefore a constructor must be called `new`, there must be no `return` statements inside the function and the instance must be built in the last expression of the function. Example:
-
-```
-pub struct ExportedClass {
-    x: usize,
-    y: i32,
-}
-
-impl ExportedClass {
-    fn new(x: usize) -> ExportedClass {
-        println!("Building an instance");
-        ExportedClass {
-            x,
-            y: -x,
-        }
-    }
-}
-```
+To select the language for each build, omit the features part and pass the target language with `--features ` to
+`cargo build`, e.g. with `cargo build --features ruby`.
 
 ### Python (pyo3)
 
-Python is supported through the library pyo3. After running cargo build, copy the generated `lib<module name>.so` and
+Python is supported through a library called pyo3. After running cargo build, copy the generated `lib<module name>.so` from the target folder and
 rename it to `<module name>.so`. You can then `import <module name>`. Hint: Use `<module name>.__dict__` to see what
 is in there.
 
 ### Ruby on Rails (helix)
 
 Follow [helix' great getting started](https://usehelix.com/getting_started), but replace the lib.rs and cargo
-dependencies the ones from this repo.
+dependencies wth the ones from this repo.
 
-### Wasm/js (wasm_bindgen)
+### Wasm/js (wasm-bindgen)
 
-wasm_bindgen's interface looks essentially the the same way that capybara, so `capybara_bindgen` does essentially the
+wasm-bindgen's interface looks essentially the the same way that capybara, so `capybara_bindgen` does essentially the
 same as `wasm_bindgen` even though it supports much less featues.
-[Read wasm_bindgen's awesome getting started](https://github.com/rustwasm/wasm-bindgen) on how to generate bindings.
+[Read wasm-bindgen's awesome getting started](https://github.com/rustwasm/wasm-bindgen) on how to generate bindings.
 Note that `extern` blocks can not use annotations on functions (which are required for e.g. console.log) and that
 `println!()` doesn't print for that target, so you effectively must check the return value of a call into rust in the
 javascript to see whether everything is set up correctly.
 
-## Debugging your application
+## Design Goals
 
-You can view expanded code with the following command, or at least get a macro trace for helix. You might need to install rustfmt before that.
+The main goal is making capybara as _intuitive_ as possible, meaning that you can develop crossing ffi boundaries the same way that you normally develop.
 
-```bash
-cargo rustc -- -Z unstable-options --pretty=expanded -Z trace-macros > expanded.rs; rustfmt ../expanded.rs
-```
-
+ * Existing code should only need minimal annotations work with capybara.
+ * As many language features as possible should be supported and common features should be bridged. (E.g. Add in rust should be mappend to __add__ in python and def + in ruby) 
+ * The ffi machinery should not be visible during any part of the development process.
+ * If the code isn't compiled to an ffi target, all caybara functions should become a no-op.
+ * Compatibility with existing tools and workflows, while filling the missing parts with a custom tool
 
 ## Features
 
@@ -129,10 +103,14 @@ cargo rustc -- -Z unstable-options --pretty=expanded -Z trace-macros > expanded.
 ## Missing
 
  * Functions (in not methods)
- * &mut self and bare self (The latter iirc isn't supported in helix)
- * Lift restrictions on constructors: Allow arbitrary returns by traversion the ast
+ * bare self (This iirc isn't supported in helix)
+ * Lift restrictions on constructors: Allow arbitrary returns by traversing the ast with syn's Fold trait
+ * Add checks: `crate-type = ["cdylib"]`, items must be `pub`, etc.
  * A CLI that wraps the wasm-bindgen-cli, setuptools-rust and `rails generate helix:crate text_transform`
- * Rewrite test.sh in rust and generating a various cases
+ * Rewrite test.sh in rust
+   * Add the ability to test various toolchains
+   * Test all types for usage in struct field, method arguments and return types
+ * Export docstring (This might already work with pyo3)
  * Windows and Mac OS X (The proc macro itself should work, the tests should pass on mac os x)
  * Special methods (equals, comparisons, hashing)
  * Conversions
@@ -140,6 +118,41 @@ cargo rustc -- -Z unstable-options --pretty=expanded -Z trace-macros > expanded.
  * Exporting trait implementations
  * Importing via extern blocks
  * Review the BindingBuilder trait for better interface options
+ * Accessors for public outside of wasm_bindgen
+
+## Advanced Usage
+
+### Constructors
+
+Capybara needs to rewrite your constructors to make them work with the underlying libraries. Therefore a constructor must be called `new`, there must be no `return` statements inside the function and the instance must be built in the last expression of the function. Example:
+
+```
+#[capybara_bindgen]
+pub struct ExportedClass {
+    x: usize,
+    y: i32,
+}
+
+#[capybara_bindgen]
+impl ExportedClass {
+    fn new(x: usize) -> ExportedClass {
+        println!("Building an instance");
+        ExportedClass {
+            x,
+            y: -x,
+        }
+    }
+}
+```
+
+## Debugging your application
+
+You can view expanded code with the following command, or at least get a macro trace for helix. You might need to install rustfmt before that.
+
+```bash
+cargo rustc -- -Z unstable-options --pretty=expanded -Z trace-macros > expanded.rs; rustfmt expanded.rs
+```
+
 
 ## Testing
 
@@ -153,7 +166,7 @@ This project is licensed under either of
 
  * Apache License, Version 2.0, ([license-apache](license-apache) or
    http://www.apache.org/licenses/license-2.0)
- * MIT license ([license-mit](LICENSE-mit) or
+ * MIT license ([license-mit](license-mit) or
    http://opensource.org/licenses/MIT)
 
 at your option.
@@ -163,3 +176,4 @@ at your option.
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in this project by you, as defined in the Apache-2.0 license,
 shall be dual licensed as above, without any additional terms or conditions.
+
