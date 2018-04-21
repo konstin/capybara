@@ -95,6 +95,8 @@ impl HelixBuilder {
 
         if is_new {
             method.sig.ident = syn::Ident::from(INITIALIZE_HELIX);
+
+            super::remove_constructor_attribute(&mut method);
         }
 
         let tokens = self.parse_into_macro_part(&method, is_new);

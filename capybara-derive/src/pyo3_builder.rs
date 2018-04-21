@@ -111,11 +111,30 @@ impl Pyo3Builder {
             .iter()
             .position(|method| method.ident == Ident::new("new"));
 
-        let (rust_new, rust_new_pos) = match rust_new_pos {
+        let (mut rust_new, rust_new_pos) = match rust_new_pos {
             // pyo3 can't deal with that method, so we remove it
             Some(pos) => (methods.remove(pos), pos),
             None => return None,
         };
+
+        let contructor_attribute = MetaItem::List(
+            Ident::new("capybara_bindgen"),
+            vec![
+                NestedMetaItem::MetaItem(MetaItem::Word(Ident::new("constructor"))),
+            ],
+        );
+
+        let attribute_pos = rust_new
+            .attrs
+            .iter()
+            .position(|x| x.style == AttrStyle::Outer && x.value == contructor_attribute);
+
+        match attribute_pos {
+            None => panic!("A constructor must have a #[capybara_bindgen(constructor)] annotation"),
+            Some(pos) => {
+                rust_new.attrs.remove(pos);
+            }
+        }
 
         let (signature, block) = match rust_new.clone().node {
             ImplItemKind::Method(signature, block) => (signature, block),

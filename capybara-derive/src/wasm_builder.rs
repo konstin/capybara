@@ -8,9 +8,28 @@ use syn;
 pub struct WasmBuilder;
 
 impl WasmBuilder {
+    /// changes `#[capybara_bindgen(...)]` into `#[wasm_bindgen(...)]`
+    fn transform_attributes(&self, item: &mut syn::Item) {
+        struct Walk;
+
+        impl<'ast> syn::visit_mut::VisitMut for Walk {
+            fn visit_attribute_mut(&mut self, attr: &mut syn::Attribute) {
+                let first_ident = attr.path.segments.iter().nth(0).map(|x| x.ident);
+                if first_ident == Some("capybara_bindgen".into()) {
+                    let mut x = syn::punctuated::Punctuated::new();
+                    x.push_value(syn::parse_str("wasm_bindgen").unwrap());
+                    attr.path.segments = x;
+                }
+            }
+        }
+
+        syn::visit_mut::VisitMut::visit_item_mut(&mut Walk, item);
+    }
+
     /// This function is adapted from wasm_bindegen 9723fd, crates/macro/src/lib.rs
     fn actual_impl(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let item = syn::parse::<syn::Item>(input).expect("expected a valid Rust item");
+        let mut item = syn::parse::<syn::Item>(input).expect("expected a valid Rust item");
+        self.transform_attributes(&mut item);
         // For now no wasm_bindgen attributes are supported
         let opts = backend::ast::BindgenAttrs::default();
 

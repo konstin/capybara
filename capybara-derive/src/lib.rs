@@ -10,12 +10,15 @@ extern crate proc_macro;
 extern crate proc_macro2;
 
 // error[E0468]: an `extern crate` loading macros must be at the crate root
+// For pyo3 we have to load the quote 0.3 macros here
 #[cfg(not(feature = "quote-0-3"))]
 #[macro_use]
 extern crate quote;
 #[cfg(feature = "quote-0-3")]
 #[macro_use]
 extern crate quote_0_3;
+#[cfg(feature = "quote-0-3")]
+extern crate quote;
 
 extern crate syn;
 
@@ -91,4 +94,20 @@ trait BindingBuilder {
     fn methods(&self, attr: TokenStream, input: TokenStream) -> TokenStream;
     /// Gets an extern block
     fn foreign_mod(&self, attr: TokenStream, input: TokenStream) -> TokenStream;
+}
+
+#[cfg(not(feature = "quote-0-3"))]
+#[allow(dead_code)]
+fn remove_constructor_attribute(method: &mut syn::ImplItemMethod) {
+    let attribute_pos = method
+        .attrs
+        .iter()
+        .position(|x| quote!(#x) == quote!(#[capybara_bindgen(constructor)]));
+
+    match attribute_pos {
+        None => panic!("A constructor must have a #[capybara_bindgen(constructor)] annotation"),
+        Some(pos) => {
+            method.attrs.remove(pos);
+        }
+    }
 }
