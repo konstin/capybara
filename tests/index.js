@@ -4,7 +4,7 @@ const assert = require('assert');
 assert(ExportedClass.add_and_print(21, 21) === 42);
 assert(ExportedClass.new(42).get_number() === 42);
 
-let instance = ExportedClass.new(42);
+let instance = new ExportedClass(42);
 
 ExportedClass.no_args();
 ExportedClass.one_arg(42);

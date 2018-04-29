@@ -70,6 +70,10 @@ impl BindingBuilder for Pyo3Builder {
     fn foreign_mod(&self, _: TokenStream, _: TokenStream) -> TokenStream {
         unimplemented!()
     }
+
+    fn function(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
+        unimplemented!()
+    }
 }
 
 #[cfg(feature = "python")]

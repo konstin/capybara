@@ -40,4 +40,9 @@ impl BindingBuilder for StubBuilder {
     fn foreign_mod(&self, _: TokenStream, input: TokenStream) -> TokenStream {
         input
     }
+
+    /// no-op
+    fn function(&self, _: TokenStream, input: TokenStream) -> TokenStream {
+        input
+    }
 }

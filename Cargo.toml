@@ -18,7 +18,7 @@ pyo3 = { path = "pyo3", features = ["extension-module"], optional = true }
 helix = { path = "helix", optional = true }
 capybara-derive = { path = "capybara-derive" }
 pyo3cls = { path = "pyo3/pyo3cls", optional = true }
-wasm-bindgen = { version = "0.2.5", optional = true }
+wasm-bindgen = { version = "0.2.7", optional = true }
 
 [workspace]
 members = [

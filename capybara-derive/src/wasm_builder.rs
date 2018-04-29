@@ -55,4 +55,8 @@ impl BindingBuilder for WasmBuilder {
     fn foreign_mod(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
         self.actual_impl(attr, input)
     }
+
+    fn function(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
+        self.actual_impl(attr, input)
+    }
 }

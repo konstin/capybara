@@ -203,4 +203,8 @@ impl BindingBuilder for HelixBuilder {
     fn foreign_mod(&self, _: TokenStream, _: TokenStream) -> TokenStream {
         unimplemented!()
     }
+
+    fn function(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
+        unimplemented!()
+    }
 }

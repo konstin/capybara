@@ -88,7 +88,7 @@ javascript to see whether everything is set up correctly.
 The main goal is making capybara as _intuitive_ as possible, meaning that you can develop crossing ffi boundaries the same way that you normally develop.
 
  * Existing code should only need minimal annotations work with capybara.
- * As many language features as possible should be supported and common features should be bridged. (E.g. Add in rust should be mappend to __add__ in python and def + in ruby) 
+ * As many language features as possible should be supported and common features should be bridged. (E.g. Add in rust should be mappend to `__add__` in python and def + in ruby)
  * The ffi machinery should not be visible during any part of the development process.
  * If the code isn't compiled to an ffi target, all caybara functions should become a no-op.
  * Compatibility with existing tools and workflows, while filling the missing parts with a custom tool
@@ -103,7 +103,6 @@ The main goal is making capybara as _intuitive_ as possible, meaning that you ca
 ## Missing
 
  * Functions (in not methods)
- * bare self (This iirc isn't supported in helix)
  * Lift restrictions on constructors: Allow arbitrary returns by traversing the ast with syn's Fold trait
  * Add checks: `crate-type = ["cdylib"]`, items must be `pub`, etc.
  * A CLI that wraps the wasm-bindgen-cli, setuptools-rust and `rails generate helix:crate text_transform`
@@ -118,7 +117,7 @@ The main goal is making capybara as _intuitive_ as possible, meaning that you ca
  * Exporting trait implementations
  * Importing via extern blocks
  * Review the BindingBuilder trait for better interface options
- * Accessors for public outside of wasm_bindgen
+ * Accessors for public fields outside of wasm_bindgen
 
 ## Advanced Usage
 

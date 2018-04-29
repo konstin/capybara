@@ -94,6 +94,8 @@ trait BindingBuilder {
     fn methods(&self, attr: TokenStream, input: TokenStream) -> TokenStream;
     /// Gets an extern block
     fn foreign_mod(&self, attr: TokenStream, input: TokenStream) -> TokenStream;
+    /// A function in not a method
+    fn function(&self, attr: TokenStream, input: TokenStream) -> TokenStream;
 }
 
 #[cfg(not(feature = "quote-0-3"))]
