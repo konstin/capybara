@@ -1,4 +1,4 @@
-#![feature(proc_macro, proc_macro_lib, specialization, const_fn)]
+#![feature(proc_macro, proc_macro_lib, specialization)]
 
 extern crate capybara_derive;
 #[cfg(feature = "ruby")]
@@ -43,7 +43,6 @@ compile_error!("You need to pass --target wasm32-unknown-unknown to compile to w
 /// pub struct ExportedClass {}
 /// capybara_init! (my_module, [ExportedClass]);
 /// ```
-///
 #[macro_export]
 macro_rules! capybara_init {
     () => {};
@@ -52,13 +51,16 @@ macro_rules! capybara_init {
 #[cfg(feature = "python")]
 #[macro_export]
 macro_rules! capybara_init {
-    ( $modname:ident, [$( $classname:ty ),*] ) => {
+    ( $modname:ident, [$( $class:ty ),*], [$( $function:ty ),*]) => {
         use $crate::pyo3;
         use $crate::pyo3::prelude::*;
         #[$crate::pyo3_init($modname)]
         fn capybara_init(_py: Python, m: &PyModule) -> PyResult<()> {
             $(
-                m.add_class::<$classname>().unwrap();
+                m.add_class::<$class>().unwrap();
+            )*
+            $(
+                m.add_function($crate::pyo3::wrap_function!($function)).unwrap();
             )*
             Ok(())
         }
@@ -68,15 +70,15 @@ macro_rules! capybara_init {
 #[cfg(feature = "ruby")]
 #[macro_export]
 macro_rules! capybara_init {
-    { $modname:ident, [$( $classname:ident ),*] } => {
-        codegen_init!([$( $classname ),*]);
-    }
+    { $modname:ident, [$( $class:ident ),*], [$( $function:ty ),*] } => {
+        codegen_init!([$( $class ),*]);
+    };
 }
 
 #[cfg(not(any(feature = "python", feature = "ruby")))]
 #[macro_export]
 macro_rules! capybara_init {
-    { $modname:ident, [$( $classname:ident ),*] } => {
+    { $modname:ident, [$( $class:ident ),*], [$( $function:ty ),*]} => {
 
     }
 }

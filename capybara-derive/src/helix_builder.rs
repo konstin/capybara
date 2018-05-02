@@ -204,7 +204,8 @@ impl BindingBuilder for HelixBuilder {
         unimplemented!()
     }
 
-    fn function(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
-        unimplemented!()
+    fn function(&self, _: TokenStream, input: TokenStream) -> TokenStream {
+        eprintln!("Function are not yet available for ruby");
+        input
     }
 }

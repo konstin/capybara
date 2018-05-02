@@ -5,7 +5,7 @@ rust:
 install:
 - git clone https://github.com/konstin/pyo3
 - cd pyo3
-- git checkout reusable_codegen
+- git checkout capybara
 - cd ..
 - git clone https://github.com/konstin/helix
 - cd helix

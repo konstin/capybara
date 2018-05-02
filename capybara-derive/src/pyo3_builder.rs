@@ -4,10 +4,10 @@ extern crate pyo3;
 extern crate pyo3_derive_backend;
 extern crate syn_0_11;
 
-use self::syn_0_11::*;
-use super::BindingBuilder;
 use proc_macro::TokenStream;
+use self::syn_0_11::*;
 use std::str::FromStr;
+use super::BindingBuilder;
 
 pub struct Pyo3Builder;
 
@@ -71,8 +71,18 @@ impl BindingBuilder for Pyo3Builder {
         unimplemented!()
     }
 
-    fn function(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
-        unimplemented!()
+    fn function(&self, _: TokenStream, input: TokenStream) -> TokenStream {
+        let mut ast = parse_item(&input.to_string()).unwrap();
+
+        let python_name = ast.ident.clone();
+        let expanded = pyo3_derive_backend::module::add_fn_to_module(&mut ast, &python_name, Vec::new());
+
+        let tokens = quote!(
+            #ast
+            #expanded
+        );
+
+        TokenStream::from_str(tokens.as_str()).unwrap()
     }
 }
 

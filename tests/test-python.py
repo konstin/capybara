@@ -50,7 +50,8 @@ def main():
 
     added = capybara_test.ExportedClass.add_and_print(21, 21)
     assert added == 42
-    assert 42 == capybara_test.ExportedClass(42).get_number()
+    assert capybara_test.ExportedClass(42).get_number() == 42
+    assert capybara_test.double(3) == 6
 
     run_structured_tests(capybara_test.ExportedClass)
 

@@ -51,7 +51,8 @@ fn capybara_bindgen_impl(attr: TokenStream, input: TokenStream) -> TokenStream {
         syn::Item::ForeignMod(_) => builder.foreign_mod(attr, input),
         syn::Item::Struct(_) => builder.class(attr, input),
         syn::Item::Impl(_) => builder.methods(attr, input),
-        _ => panic!("This item of kind isn't supported"),
+        syn::Item::Fn(_) => builder.function(attr, input),
+        _ => panic!("This kind of item isn't supported"),
     };
 
     generated

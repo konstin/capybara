@@ -1,9 +1,15 @@
-#![feature(proc_macro, specialization, wasm_import_module, wasm_custom_section)]
+#![feature(proc_macro, specialization, wasm_import_module, wasm_custom_section, concat_idents)]
 
 #[macro_use]
 extern crate capybara;
 
 use capybara::capybara_bindgen;
+
+
+#[capybara_bindgen]
+pub fn double(x: usize) -> usize{
+    x * 2
+}
 
 #[capybara_bindgen]
 pub struct ExportedClass {
@@ -69,4 +75,4 @@ impl ExportedClass {
     }
 }
 
-capybara_init! {capybara_test, [ExportedClass]}
+capybara_init! {capybara_test, [ExportedClass], [double]}

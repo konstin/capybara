@@ -5,7 +5,7 @@
 A framework for generating bindings from Rust to arbitrary languages. Currently supports python (via [pyo3](https://github.com/PyO3/pyo3)), ruby
 (via [helix](https://github.com/tildeio/helix)) and wasm/js (via [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)) are supported.
 
-**Note: This is in alpha stage. You can't do much more than structs and methods with the basic types yet.**
+**Note: This is in alpha stage. You can't do much more than structs, methods and functions with the basic types yet.**
 
 ## Usage
 
@@ -14,7 +14,7 @@ A nightly compiler <= nightly-2018-04-06 is required (see [this bug](https://git
 The boilerplate:
 
 ```rust
-#![feature(proc_macro, specialization, const_fn)]
+#![feature(proc_macro, specialization, wasm_import_module, wasm_custom_section, concat_idents)]
 
 #[macro_use]
 extern crate capybara;
@@ -25,6 +25,11 @@ use capybara::capybara_bindgen;
 Annotate every struct and every methods block you want to export with `#[capybara_bindgen]`, e.g.:
 
 ```rust
+#[capybara_bindgen]
+fn double(x: usize) -> usize {
+    x * 2
+}
+
 #[capybara_bindgen]
 pub struct ExportedClass {}
 
@@ -41,7 +46,7 @@ We also need to generate an extrypoint for module/package on the target site. Th
 with the name of module/package and the names of the structs to generate classes form.
 
 ```rust
-capybara_init! {capybara_test, [ExportedClass]}
+capybara_init! {capybara_test, [ExportedClass], [double]}
 ```
 
 Add the following to your Cargo.toml:
