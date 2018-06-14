@@ -6,15 +6,13 @@ pub extern crate helix;
 #[cfg(feature = "python")]
 pub extern crate pyo3;
 #[cfg(feature = "python")]
-extern crate pyo3cls;
+pub extern crate pyo3cls;
 #[cfg(feature = "wasm")]
 pub extern crate wasm_bindgen;
 
 pub use capybara_derive::capybara_bindgen;
 #[cfg(feature = "ruby")]
 pub use helix::Metadata;
-#[cfg(feature = "python")]
-pub use pyo3cls::mod3init as pyo3_init;
 
 /// It's not allowed to import the same item twice, so we use this module with a star import instead
 #[cfg(feature = "wasm")]
@@ -51,10 +49,11 @@ macro_rules! capybara_init {
 #[cfg(feature = "python")]
 #[macro_export]
 macro_rules! capybara_init {
-    ( $modname:ident, [$( $class:ty ),*], [$( $function:ty ),*]) => {
+    ($modname:ident, [$( $class:ident ),*], [$( $function:ident ),*]) => {
         use $crate::pyo3;
         use $crate::pyo3::prelude::*;
-        #[$crate::pyo3_init($modname)]
+        use $crate::pyo3cls::mod3init as pyo3_init;
+        #[pyo3_init($modname)]
         fn capybara_init(_py: Python, m: &PyModule) -> PyResult<()> {
             $(
                 m.add_class::<$class>().unwrap();
@@ -70,7 +69,7 @@ macro_rules! capybara_init {
 #[cfg(feature = "ruby")]
 #[macro_export]
 macro_rules! capybara_init {
-    { $modname:ident, [$( $class:ident ),*], [$( $function:ty ),*] } => {
+    ($modname:ident, [$( $class:ident ),*], [$( $function:ident ),*]) => {
         codegen_init!([$( $class ),*]);
     };
 }
@@ -78,9 +77,7 @@ macro_rules! capybara_init {
 #[cfg(not(any(feature = "python", feature = "ruby")))]
 #[macro_export]
 macro_rules! capybara_init {
-    { $modname:ident, [$( $class:ident ),*], [$( $function:ty ),*]} => {
-
-    }
+    ($modname:ident,[$($class:ident),*],[$($function:ident),*]) => {};
 }
 
 /// This macro is doing essentially the same as helix' parse! macro with state: parse_struct, i.e.

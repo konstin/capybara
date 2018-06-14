@@ -1,7 +1,0 @@
-[package]
-name = "syn-0-11"
-version = "0.1.0"
-authors = ["konstin <konstin@mailbox.org>"]
-
-[dependencies]
-syn = {features = ["full"], version = "0.11"}

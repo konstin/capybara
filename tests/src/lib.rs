@@ -5,9 +5,8 @@ extern crate capybara;
 
 use capybara::capybara_bindgen;
 
-
 #[capybara_bindgen]
-pub fn double(x: usize) -> usize{
+pub fn double(x: usize) -> usize {
     x * 2
 }
 

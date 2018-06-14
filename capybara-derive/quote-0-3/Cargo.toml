@@ -1,7 +1,0 @@
-[package]
-name = "quote-0-3"
-version = "0.1.0"
-authors = ["konstin <konstin@mailbox.org>"]
-
-[dependencies]
-quote = "0.3"

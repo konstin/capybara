@@ -9,15 +9,7 @@
 extern crate proc_macro;
 extern crate proc_macro2;
 
-// error[E0468]: an `extern crate` loading macros must be at the crate root
-// For pyo3 we have to load the quote 0.3 macros here
-#[cfg(not(feature = "quote-0-3"))]
 #[macro_use]
-extern crate quote;
-#[cfg(feature = "quote-0-3")]
-#[macro_use]
-extern crate quote_0_3;
-#[cfg(feature = "quote-0-3")]
 extern crate quote;
 
 extern crate syn;
@@ -99,7 +91,6 @@ trait BindingBuilder {
     fn function(&self, attr: TokenStream, input: TokenStream) -> TokenStream;
 }
 
-#[cfg(not(feature = "quote-0-3"))]
 #[allow(dead_code)]
 fn remove_constructor_attribute(method: &mut syn::ImplItemMethod) {
     let attribute_pos = method
