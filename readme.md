@@ -1,4 +1,4 @@
-# capybara
+# Capybara
 
 A framework for generating bindings from Rust to arbitrary languages. Currently supports python (via [pyo3](https://github.com/PyO3/pyo3)), ruby
 (via [helix](https://github.com/tildeio/helix)) and wasm/js (via [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)) are supported.
@@ -6,8 +6,6 @@ A framework for generating bindings from Rust to arbitrary languages. Currently 
 **Note: This is in alpha stage. You can't do much more than structs, methods and functions with the basic types yet.**
 
 ## Usage
-
-A nightly compiler <= nightly-2018-04-06 is required (see [this bug](https://github.com/rust-lang/rust/issues/49768)).
 
 The boilerplate:
 
@@ -20,7 +18,7 @@ extern crate capybara;
 use capybara::capybara_bindgen;
 ```
 
-Annotate every struct and every methods block you want to export with `#[capybara_bindgen]`, e.g.:
+Annotate every struct, impl-block and function you want to export with `#[capybara_bindgen]`:
 
 ```rust
 #[capybara_bindgen]
@@ -40,7 +38,7 @@ impl ExportedClass {
 }
 ```
 
-We also need to generate an extrypoint for module/package on the target site. This is done by calling `capybara_init!`
+We also need to generate an extrypoint for module/package/gem on the target site. This is done by calling `capybara_init!`
 with the name of module/package and the names of the structs to generate classes form.
 
 ```rust
@@ -51,20 +49,20 @@ Add the following to your Cargo.toml:
 
 ```toml
 [lib]
-name = "<Name of the module you used in capybara_inti!>"
+name = "<Name of the module you used in capybara_init!>"
 crate-type = ["cdylib"]
 ```
 
-If only target a single language, you can use the `features` option. Available are "python", "ruby" and "wasm".
+If you only target a single language, you can use the `features` option. Available are "python", "ruby" and "wasm".
 Note that these options are mutually exclusive.
 
-```
+```toml
 [dependencies]
 capybara = { version = "0.1.0", features = ["python"] }
 ```
 
 To select the language for each build, omit the features part and pass the target language with `--features ` to
-`cargo build`, e.g. with `cargo build --features ruby`.
+`cargo build`, e.g. with `cargo build --features capbyrar/ruby`.
 
 ### Python (pyo3)
 
@@ -75,7 +73,7 @@ is in there.
 ### Ruby on Rails (helix)
 
 Follow [helix' great getting started](https://usehelix.com/getting_started), but replace the lib.rs and cargo
-dependencies wth the ones from this repo. You also need to patch `project.rb` in helix' gem to [project.rb](https://github.com/konstin/helix/blob/538a1c9fa9382c85aed50794d91fd6096c2ab6a0/ruby/lib/helix_runtime/project.rb) until [tildeio/helix#148](https://github.com/tildeio/helix/pull/148) is finally merged.
+dependencies wth the ones from this repo. You also need to patch `project.rb` in the `helix_runtime` gem with [this project.rb](https://github.com/konstin/helix/blob/538a1c9fa9382c85aed50794d91fd6096c2ab6a0/ruby/lib/helix_runtime/project.rb) until [tildeio/helix#148](https://github.com/tildeio/helix/pull/148) is finally merged.
 
 ### Wasm/js (wasm-bindgen)
 
@@ -105,14 +103,14 @@ The main goal is making capybara as _intuitive_ as possible, meaning that you ca
 
 ## Missing - Contributions welcome :)
 
- * Functions (in not methods)
+ * Functions in ruby
  * Lift restrictions on constructors: Allow arbitrary returns by traversing the ast with syn's Fold trait
  * Add checks: `crate-type = ["cdylib"]`, items must be `pub`, etc.
  * A CLI that wraps the wasm-bindgen-cli, setuptools-rust and `rails generate helix:crate text_transform`
  * Rewrite test.sh in rust
    * Add the ability to test various toolchains
    * Test all types for usage in struct field, method arguments and return types
- * Export docstring (This might already work with pyo3)
+ * Export docstrings (This already works with pyo3)
  * Windows and Mac OS X (The proc macro itself should work, the tests should pass on mac os x)
  * Special methods (equals, comparisons, hashing)
  * Conversions
