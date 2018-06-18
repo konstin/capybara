@@ -1,6 +1,5 @@
 use super::BindingBuilder;
-use proc_macro::TokenStream;
-use quote::Tokens;
+use proc_macro2::{Span, TokenStream};
 use syn;
 
 pub struct HelixBuilder;
@@ -15,7 +14,7 @@ const INITIALIZE_HELIX: &'static str = "initialize";
 
 impl HelixBuilder {
     /// Parses the function into the form codegen_ruby_init wants
-    fn parse_into_macro_part(&self, method: &syn::ImplItemMethod, is_new: bool) -> Tokens {
+    fn parse_into_macro_part(&self, method: &syn::ImplItemMethod, is_new: bool) -> TokenStream {
         let output = match method.sig.decl.output {
             syn::ReturnType::Default => quote!(()),
             syn::ReturnType::Type(_, ref ty) => quote!(#ty),
@@ -28,23 +27,27 @@ impl HelixBuilder {
             .first()
             .map(syn::punctuated::Pair::into_value);
 
-        let method_type = match first {
-            Some(syn::FnArg::SelfRef(_)) => quote!(instance_method),
-            Some(syn::FnArg::SelfValue(_)) => quote!(instance_method),
-            _ => if is_new {
-                quote!(initializer)
-            } else {
-                quote!(class_method)
-            },
-        };
-
+        let method_type;
+        let args;
         let inputs = &method.sig.decl.inputs;
-        // Helix expects the argument list to be without self
-        let args = if method_type == quote!(instance_method) {
-            let inputs = inputs.iter().skip(1);
-            quote!([#(#inputs),*])
-        } else {
-            quote!([#(#inputs),*])
+
+        match first {
+            Some(syn::FnArg::SelfRef(_)) | Some(syn::FnArg::SelfValue(_)) => {
+                // Helix expects the argument list to be without self
+                let inputs = inputs.iter().skip(1);
+                args = quote!([#(#inputs),*]);
+
+                method_type = quote!(instance_method);
+            }
+            _ => {
+                args = quote!([#(#inputs),*]);
+
+                if is_new {
+                    method_type = quote!(initializer);
+                } else {
+                    method_type = quote!(class_method);
+                }
+            }
         };
 
         let self_tt = match first {
@@ -90,11 +93,11 @@ impl HelixBuilder {
     }
 
     /// Mainly rewriting the new function into the initialize function helix wants
-    fn method(&self, mut method: syn::ImplItemMethod) -> (syn::ImplItemMethod, Tokens) {
-        let is_new = method.sig.ident == syn::Ident::from("new");
+    fn method(&self, mut method: syn::ImplItemMethod) -> (syn::ImplItemMethod, TokenStream) {
+        let is_new = method.sig.ident == "new";
 
         if is_new {
-            method.sig.ident = syn::Ident::from(INITIALIZE_HELIX);
+            method.sig.ident = syn::Ident::new(INITIALIZE_HELIX, Span::call_site());
 
             super::remove_constructor_attribute(&mut method);
         }
@@ -131,7 +134,7 @@ impl HelixBuilder {
 impl BindingBuilder for HelixBuilder {
     /// Calls codegen_from_struct!
     fn class(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let class: syn::ItemStruct = syn::parse(input).unwrap();
+        let class: syn::ItemStruct = syn::parse2(input).unwrap();
         let rust_name = &class.ident;
         let struct_body = class.struct_token;
 
@@ -159,7 +162,7 @@ impl BindingBuilder for HelixBuilder {
     /// Handles some parsing boilerplate and the invocation of codegen_ruby_init!. The actual work
     /// is done by [HelixBuilder::method] and [HelixBuild::parse_into_macro_part]
     fn methods(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let mut impl_block: syn::ItemImpl = syn::parse(input).unwrap();
+        let mut impl_block: syn::ItemImpl = syn::parse2(input).unwrap();
         let rust_name = impl_block.self_ty.clone();
 
         let mut methods_tokens = vec![];

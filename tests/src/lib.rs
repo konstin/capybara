@@ -4,6 +4,7 @@
 extern crate capybara;
 
 use capybara::capybara_bindgen;
+use capybara::prelude::*;
 
 #[capybara_bindgen]
 pub fn double(x: usize) -> usize {

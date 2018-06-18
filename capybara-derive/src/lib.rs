@@ -11,10 +11,10 @@ extern crate proc_macro2;
 
 #[macro_use]
 extern crate quote;
-
+#[macro_use]
 extern crate syn;
 
-use proc_macro::TokenStream;
+use proc_macro2::TokenStream;
 
 #[cfg(feature = "python")]
 mod pyo3_builder;
@@ -30,24 +30,30 @@ mod stub_builder;
 /// The heart of capybara: This attribute can be added to a struct to generate bindings for that struct,
 /// and then also to a plain impl block (i.e. not a trait implementation).
 #[proc_macro_attribute]
-pub fn capybara_bindgen(attr: TokenStream, input: TokenStream) -> TokenStream {
+pub fn capybara_bindgen(
+    attr: proc_macro::TokenStream,
+    input: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
     capybara_bindgen_impl(attr, input)
 }
 
-fn capybara_bindgen_impl(attr: TokenStream, input: TokenStream) -> TokenStream {
+fn capybara_bindgen_impl(
+    attr: proc_macro::TokenStream,
+    input: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
     let item: syn::Item = syn::parse(input.clone()).unwrap();
 
     let builder = get_builder();
 
     let generated = match item {
-        syn::Item::ForeignMod(_) => builder.foreign_mod(attr, input),
-        syn::Item::Struct(_) => builder.class(attr, input),
-        syn::Item::Impl(_) => builder.methods(attr, input),
-        syn::Item::Fn(_) => builder.function(attr, input),
+        syn::Item::ForeignMod(_) => builder.foreign_mod(attr.into(), input.into()),
+        syn::Item::Struct(_) => builder.class(attr.into(), input.into()),
+        syn::Item::Impl(_) => builder.methods(attr.into(), input.into()),
+        syn::Item::Fn(_) => builder.function(attr.into(), input.into()),
         _ => panic!("This kind of item isn't supported"),
     };
 
-    generated
+    generated.into()
 }
 
 /// A workaround for getting feaature-independent typings
@@ -93,10 +99,9 @@ trait BindingBuilder {
 
 #[allow(dead_code)]
 fn remove_constructor_attribute(method: &mut syn::ImplItemMethod) {
-    let attribute_pos = method
-        .attrs
-        .iter()
-        .position(|x| quote!(#x) == quote!(#[capybara_bindgen(constructor)]));
+    let constructor_attr: syn::Attribute = parse_quote!(#[capybara_bindgen(constructor)]);
+
+    let attribute_pos = method.attrs.iter().position(|x| x == &constructor_attr);
 
     match attribute_pos {
         None => panic!("A constructor must have a #[capybara_bindgen(constructor)] annotation"),

@@ -16,6 +16,7 @@ The boilerplate:
 extern crate capybara;
 
 use capybara::capybara_bindgen;
+use capybara::prelude::*;
 ```
 
 Annotate every struct, impl-block and function you want to export with `#[capybara_bindgen]`:

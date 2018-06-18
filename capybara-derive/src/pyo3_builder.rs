@@ -1,11 +1,10 @@
-//! Beware, lands of ugly syn 0.11 code wrapping an ugly library lie ahead of you
+//! Beware, this code is mostly workarounds directly ported from syn 0.11
 
-extern crate pyo3;
 extern crate pyo3_derive_backend;
 extern crate syn;
 
 use super::BindingBuilder;
-use proc_macro::TokenStream;
+use proc_macro2::TokenStream;
 use syn::buffer::TokenBuffer;
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
@@ -21,10 +20,10 @@ fn attribute_from_str(attr_str: &str) -> syn::Attribute {
 /// This is the same boilerplate that pyo3 uses
 impl BindingBuilder for Pyo3Builder {
     fn class(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
-        let mut class = syn::parse(input).unwrap();
+        let mut class = syn::parse2(input).unwrap();
 
         let args: Vec<syn::Expr> = {
-            let buffer = TokenBuffer::new(attr);
+            let buffer = TokenBuffer::new2(attr);
             let punc = Punctuated::<syn::Expr, Comma>::parse_terminated(buffer.begin());
             punc.expect("could not parse macro arguments")
                 .0
@@ -42,7 +41,7 @@ impl BindingBuilder for Pyo3Builder {
     }
 
     fn methods(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let mut impl_block: syn::ItemImpl = syn::parse(input).expect("Expected an impl block");
+        let mut impl_block: syn::ItemImpl = syn::parse2(input).expect("Expected an impl block");
 
         let classname = impl_block.self_ty.clone();
         let constructor = Pyo3Builder::constructor(&mut impl_block.items, &classname);
@@ -82,7 +81,7 @@ impl BindingBuilder for Pyo3Builder {
     }
 
     fn function(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let mut item_fn: syn::ItemFn = syn::parse(input).unwrap();
+        let mut item_fn: syn::ItemFn = syn::parse2(input).unwrap();
 
         let python_name = item_fn.ident.clone();
         let expanded =
@@ -111,7 +110,7 @@ impl Pyo3Builder {
 
                 // Pyo3 currently can't handle the implicit return type
                 if method.sig.decl.output == syn::ReturnType::Default {
-                    method.sig.decl.output = syn::parse_str("-> ()").unwrap();
+                    method.sig.decl.output = parse_quote!(-> ());
                 }
 
                 if is_static {
@@ -136,7 +135,7 @@ impl Pyo3Builder {
 
         for (pos, impl_item) in impl_items.iter().enumerate() {
             if let syn::ImplItem::Method(ref method) = impl_item {
-                if method.sig.ident.as_ref() == "new" {
+                if method.sig.ident == "new" {
                     rust_new_pos = Some(pos);
                     rust_new = Some(method.clone());
                 }
@@ -189,7 +188,7 @@ impl Pyo3Builder {
             }
         );
 
-        let pyo3_new: syn::ImplItem = syn::parse(pyo3_new.into()).unwrap();
+        let pyo3_new: syn::ImplItem = syn::parse2(pyo3_new.into()).unwrap();
 
         Some((syn::ImplItem::Method(rust_new), pyo3_new, rust_new_pos))
     }

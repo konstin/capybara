@@ -11,14 +11,25 @@ pub extern crate pyo3cls;
 pub extern crate wasm_bindgen;
 
 pub use capybara_derive::capybara_bindgen;
-#[cfg(feature = "ruby")]
-pub use helix::Metadata;
 
 /// It's not allowed to import the same item twice, so we use this module with a star import instead
-#[cfg(feature = "wasm")]
-pub mod reexport {
+pub mod prelude {
+    #[cfg(feature = "wasm")]
     pub use wasm_bindgen;
+    #[cfg(feature = "wasm")]
     pub use wasm_bindgen::prelude::*;
+
+    #[cfg(feature = "ruby")]
+    pub use helix;
+
+    #[cfg(feature = "ruby")]
+    pub use helix::*;
+
+    #[cfg(feature = "python")]
+    pub use pyo3;
+
+    #[cfg(feature = "python")]
+    pub use pyo3::prelude::*;
 }
 
 #[cfg(all(not(target_arch = "wasm32"), feature = "wasm"))]
@@ -51,10 +62,9 @@ macro_rules! capybara_init {
 macro_rules! capybara_init {
     ($modname:ident, [$( $class:ident ),*], [$( $function:ident ),*]) => {
         use $crate::pyo3;
-        use $crate::pyo3::prelude::*;
         use $crate::pyo3cls::mod3init as pyo3_init;
         #[pyo3_init($modname)]
-        fn capybara_init(_py: Python, m: &PyModule) -> PyResult<()> {
+        fn capybara_init(_py: $crate::pyo3::Python, m: &$crate::pyo3::PyModule) -> $crate::pyo3::PyResult<()> {
             $(
                 m.add_class::<$class>().unwrap();
             )*
@@ -93,7 +103,6 @@ macro_rules! codegen_from_struct {
         struct $name:ident { $($struct:tt)* }
     } => {
         // Get the macros into scope
-        use $crate::helix::*;
         codegen_struct! {
             pub: false,
             rust_name: $name,
@@ -106,7 +115,6 @@ macro_rules! codegen_from_struct {
         pub struct $name:ident { $($struct:tt)* }
     } => {
         // Get the macros into scope
-        use $crate::helix::*;
         codegen_struct! {
             pub: true,
             rust_name: $name,

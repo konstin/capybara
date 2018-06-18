@@ -1,6 +1,6 @@
 use super::BindingBuilder;
-use proc_macro::TokenStream;
-use quote::{ToTokens, Tokens};
+use proc_macro2::{Span, TokenStream};
+use quote::ToTokens;
 use syn;
 
 /// This is stub target that does not emitt any bindings
@@ -14,26 +14,30 @@ impl BindingBuilder for StubBuilder {
 
     /// Removes all the capybara_bindgen attributes
     fn methods(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let mut impl_block: syn::ItemImpl = syn::parse(input).unwrap();
+        let mut impl_block: syn::ItemImpl = syn::parse2(input).unwrap();
 
         struct Walk;
 
         impl<'ast> syn::visit_mut::VisitMut for Walk {
             fn visit_impl_item_method_mut(&mut self, method: &mut syn::ImplItemMethod) {
+                // For some unknown reason parse_quote fails here
+                let path_segment = syn::PathSegment {
+                    ident: syn::Ident::new("capybara_bindgen", Span::call_site()),
+                    arguments: syn::PathArguments::None,
+                };
+                let path: syn::Path = path_segment.into();
                 method.attrs = method
                     .attrs
                     .clone()
                     .into_iter()
-                    .filter(|attr| attr.path != syn::parse_str("capybara_bindgen").unwrap())
+                    .filter(|attr| attr.path != path)
                     .collect();
             }
         }
 
         syn::visit_mut::VisitMut::visit_item_impl_mut(&mut Walk, &mut impl_block);
 
-        let mut tokens = Tokens::new();
-        impl_block.to_tokens(&mut tokens);
-        tokens.into()
+        impl_block.into_token_stream()
     }
 
     /// no-op
