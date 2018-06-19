@@ -67,12 +67,12 @@ impl BindingBuilder for Pyo3Builder {
                 impl #classname {
                     #new_method_impl
                 }
-            ).into()
+            )
         } else {
             quote!(
                 #impl_block
                 #expanded
-            ).into()
+            )
         }
     }
 
@@ -92,7 +92,7 @@ impl BindingBuilder for Pyo3Builder {
             #expanded
         );
 
-        tokens.into()
+        tokens
     }
 }
 
@@ -188,7 +188,7 @@ impl Pyo3Builder {
             }
         );
 
-        let pyo3_new: syn::ImplItem = syn::parse2(pyo3_new.into()).unwrap();
+        let pyo3_new: syn::ImplItem = syn::parse2(pyo3_new).unwrap();
 
         Some((syn::ImplItem::Method(rust_new), pyo3_new, rust_new_pos))
     }

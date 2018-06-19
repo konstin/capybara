@@ -12,6 +12,7 @@ license = "Apache-2.0 OR MIT"
 python = ["capybara-derive/python", "pyo3", "pyo3cls"]
 ruby = ["capybara-derive/ruby", "helix"]
 wasm = ["capybara-derive/wasm", "wasm-bindgen"]
+debug-macros = ["capybara-derive/debug-macros"]
 
 [dependencies]
 pyo3 = { path = "../pyo3", features = ["extension-module"], optional = true }

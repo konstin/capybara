@@ -1,13 +1,9 @@
-use super::BindingBuilder;
 use proc_macro2::{Span, TokenStream};
+use super::BindingBuilder;
 use syn;
 
 pub struct HelixBuilder;
 
-/// The name of the field added by helix, ...
-const INSTANTIATION_PARAM: &'static str = "helix";
-/// ... which is also passed to the constructor
-const INITIALIZE_PARAM: &'static str = "helix: ::Metadata";
 /// Despite being a variable in the macros, helix has this name hardcoded for the name of the
 /// constructor
 const INITIALIZE_HELIX: &'static str = "initialize";
@@ -113,7 +109,7 @@ impl HelixBuilder {
             match last {
                 syn::Stmt::Expr(syn::Expr::Struct(ref mut expr_struct)) => expr_struct
                     .fields
-                    .insert(0, syn::parse_str(INSTANTIATION_PARAM).unwrap()),
+                    .insert(0, parse_quote!(helix)),
                 _ => panic!(
                     "The last statement of a function must be the instantiation of the struct"
                 ),
@@ -124,7 +120,7 @@ impl HelixBuilder {
                 .sig
                 .decl
                 .inputs
-                .insert(0, syn::parse_str(INITIALIZE_PARAM).unwrap());
+                .insert(0, parse_quote!(helix: ::Metadata));
         }
 
         (method, tokens)
@@ -147,16 +143,14 @@ impl BindingBuilder for HelixBuilder {
             methods: []
         });
 
-        let tokens = quote!(
+        quote!(
             codegen_from_struct! {
                 #class
             }
 
             codegen_coercions!(#extra_codegen_body);
             codegen_allocator!(#extra_codegen_body);
-        );
-
-        tokens.into()
+        )
     }
 
     /// Handles some parsing boilerplate and the invocation of codegen_ruby_init!. The actual work
@@ -194,13 +188,11 @@ impl BindingBuilder for HelixBuilder {
             methods: [#(#methods_tokens)*]
         });
 
-        let tokens = quote! {
+        quote! {
             #impl_block
 
             codegen_ruby_init!(#class);
-        };
-
-        tokens.into()
+        }
     }
 
     fn foreign_mod(&self, _: TokenStream, _: TokenStream) -> TokenStream {

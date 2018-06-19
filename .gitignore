@@ -9,3 +9,4 @@ tests/lib/capybara-test
 compare-codegen/capybara-*.rs
 compare-codegen/native-*.rs
 Cargo.lock
+expanded.rs

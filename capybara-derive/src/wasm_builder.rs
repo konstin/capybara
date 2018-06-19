@@ -37,7 +37,7 @@ impl WasmBuilder {
         quote!(
             #ret
             #program
-        ).into()
+        )
     }
 }
 

@@ -10,7 +10,7 @@ helix = { path = "../helix", optional = true }
 wasm-bindgen-backend = { version = "0.2.11", optional = true }
 
 syn = {features = ["full", "extra-traits", "visit-mut"], version = "0.14"}
-proc-macro2 = { version = "0.4" }
+proc-macro2 = { version = "0.4", features = ["nightly"] }
 
 [lib]
 proc-macro = true
@@ -19,3 +19,4 @@ proc-macro = true
 python = ["pyo3-derive-backend"]
 ruby = ["helix"]
 wasm = ["wasm-bindgen-backend"]
+debug-macros = []

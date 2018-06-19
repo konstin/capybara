@@ -53,6 +53,11 @@ fn capybara_bindgen_impl(
         _ => panic!("This kind of item isn't supported"),
     };
 
+    if cfg!(feature = "debug-macros") {
+        print_token_stream(generated.clone(), 0);
+    }
+
+
     generated.into()
 }
 
@@ -108,5 +113,26 @@ fn remove_constructor_attribute(method: &mut syn::ImplItemMethod) {
         Some(pos) => {
             method.attrs.remove(pos);
         }
+    }
+}
+
+fn print_token_stream(tokens: TokenStream, level: usize) {
+    for token in tokens.into_iter() {
+        match token {
+            proc_macro2::TokenTree::Group(ref group) => {
+                let (open, close) = match group.delimiter() {
+                    proc_macro2::Delimiter::Parenthesis => ("(", ")"),
+                    proc_macro2::Delimiter::Brace => ("{", "}"),
+                    proc_macro2::Delimiter::Bracket => ("(", ")"),
+                    proc_macro2::Delimiter::None => ("Ø", "Ø"),
+                };
+                println!("{:>2}: {:<30} {:?}", level, open, token.span());
+                print_token_stream(group.stream(), level + 1);
+                println!("{:>2}: {:<30} {:?}", level, close, token.span());
+            }
+            _ => {
+                println!("{:>2}: {:<30} {:?}", level, token, token.span());
+            }
+        };
     }
 }
