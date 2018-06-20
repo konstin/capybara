@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Creates files with the expanded macros for further analysis
 
+set -e
+
 cd capybara
 
 cargo rustc --features "capybara/python" -- -Z unstable-options --pretty=expanded > ../capybara-python.rs; rustfmt ../capybara-python.rs
@@ -9,11 +11,9 @@ cargo rustc --features "capybara/wasm" --target wasm32-unknown-unknown -- -Z uns
 
 cd ..
 
-for I in "helix" "pyo3" "wasm"; do
-    cd $I
-    cargo rustc -- -Z unstable-options --pretty=expanded > ../native-$I.rs; rustfmt ../native-$I.rs
-    cd ..
-done
+cargo rustc --manifest-path helix/Cargo.toml -- -Z unstable-options --pretty=expanded > native-helix.rs; rustfmt native-helix.rs
+cargo rustc --manifest-path pyo3/Cargo.toml -- -Z unstable-options --pretty=expanded > native-pyo3.rs; rustfmt native-pyo3.rs
+cargo rustc --manifest-path wasm/Cargo.toml --target wasm32-unknown-unknown -- -Z unstable-options --pretty=expanded > native-wasm.rs; rustfmt native-wasm.rs
 
 echo "========== Wasm-bindgen ============"
 

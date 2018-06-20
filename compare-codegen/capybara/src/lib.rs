@@ -3,16 +3,16 @@
 #[macro_use]
 extern crate capybara;
 
-use capybara::capybara_bindgen;
+use capybara::prelude::*;
 
-#[capybara_bindgen]
+#[capybara]
 pub struct ExportedClass {
     number: i32,
 }
 
-#[capybara_bindgen]
+#[capybara]
 impl ExportedClass {
-    #[capybara_bindgen(constructor)]
+    #[capybara(constructor)]
     pub fn new(number: i32) -> ExportedClass {
         ExportedClass { number }
     }
@@ -39,4 +39,4 @@ impl ExportedClass {
     }
 }
 
-capybara_init! {capybara_test, [ExportedClass]}
+capybara_init! {capybara_test, [ExportedClass], []}

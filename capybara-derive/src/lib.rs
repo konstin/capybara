@@ -104,12 +104,12 @@ trait BindingBuilder {
 
 #[allow(dead_code)]
 fn remove_constructor_attribute(method: &mut syn::ImplItemMethod) {
-    let constructor_attr: syn::Attribute = parse_quote!(#[capybara_bindgen(constructor)]);
+    let constructor_attr: syn::Attribute = parse_quote!(#[capybara(constructor)]);
 
     let attribute_pos = method.attrs.iter().position(|x| x == &constructor_attr);
 
     match attribute_pos {
-        None => panic!("A constructor must have a #[capybara_bindgen(constructor)] annotation"),
+        None => panic!("A constructor must have a #[capybara(constructor)] annotation"),
         Some(pos) => {
             method.attrs.remove(pos);
         }

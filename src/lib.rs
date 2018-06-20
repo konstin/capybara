@@ -14,6 +14,8 @@ pub use capybara_derive::capybara_bindgen;
 
 /// It's not allowed to import the same item twice, so we use this module with a star import instead
 pub mod prelude {
+    pub use capybara_derive::capybara_bindgen as capybara;
+
     #[cfg(feature = "wasm")]
     pub use wasm_bindgen;
     #[cfg(feature = "wasm")]
@@ -48,7 +50,7 @@ compile_error!("You need to pass --target wasm32-unknown-unknown to compile to w
 /// # Example
 ///
 /// ```
-/// #[capybara_bindgen]
+/// #[capybara]
 /// pub struct ExportedClass {}
 /// capybara_init! (my_module, [ExportedClass]);
 /// ```

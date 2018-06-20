@@ -3,20 +3,19 @@
 #[macro_use]
 extern crate capybara;
 
-use capybara::capybara_bindgen;
 use capybara::prelude::*;
 
-#[capybara_bindgen]
+#[capybara]
 pub fn double(x: usize) -> usize {
     x * 2
 }
 
-#[capybara_bindgen]
+#[capybara]
 pub struct ExportedClass {
     number: i32,
 }
 
-#[capybara_bindgen]
+#[capybara]
 impl ExportedClass {
     #[capybara_bindgen(constructor)]
     pub fn new(number: i32) -> ExportedClass {

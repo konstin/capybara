@@ -11,6 +11,7 @@ pub struct ExportedClass {
 
 #[wasm_bindgen]
 impl ExportedClass {
+    #[wasm_bindgen(constructor)]
     pub fn new(number: i32) -> ExportedClass {
         ExportedClass { number }
     }

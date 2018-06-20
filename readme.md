@@ -15,22 +15,21 @@ The boilerplate:
 #[macro_use]
 extern crate capybara;
 
-use capybara::capybara_bindgen;
 use capybara::prelude::*;
 ```
 
-Annotate every struct, impl-block and function you want to export with `#[capybara_bindgen]`:
+Annotate every struct, impl-block and function you want to export with `#[capybara]`:
 
 ```rust
-#[capybara_bindgen]
+#[capybara]
 fn double(x: usize) -> usize {
     x * 2
 }
 
-#[capybara_bindgen]
+#[capybara]
 pub struct ExportedClass {}
 
-#[capybara_bindgen]
+#[capybara]
 impl ExportedClass {
     fn print_and_add(x: i32, y: i32) -> i32 {
         println!("Printing from rust: {}", x + y);
@@ -78,7 +77,7 @@ dependencies wth the ones from this repo. You also need to patch `project.rb` in
 
 ### Wasm/js (wasm-bindgen)
 
-wasm-bindgen's interface looks essentially the the same way that capybara, so `capybara_bindgen` does essentially the
+wasm-bindgen's interface looks essentially the the same way that capybara, so `capybara` does essentially the
 same as `wasm_bindgen` even though it supports much less featues.
 [Read wasm-bindgen's awesome getting started](https://github.com/rustwasm/wasm-bindgen) on how to generate bindings.
 Note that `extern` blocks can not use annotations on functions (which are required for e.g. console.log) and that
@@ -128,14 +127,15 @@ The main goal is making capybara as _intuitive_ as possible, meaning that you ca
 Capybara needs to rewrite your constructors to make them work with the underlying libraries. Therefore a constructor must be called `new`, there must be no `return` statements inside the function and the instance must be built in the last expression of the function. Example:
 
 ```
-#[capybara_bindgen]
+#[capybara]
 pub struct ExportedClass {
     x: usize,
     y: i32,
 }
 
-#[capybara_bindgen]
+#[capybara]
 impl ExportedClass {
+    #[capybara]
     fn new(x: usize) -> ExportedClass {
         println!("Building an instance");
         ExportedClass {

@@ -148,7 +148,7 @@ impl Pyo3Builder {
         // pyo3 can't deal with that method, so we remove it
         impl_items.remove(rust_new_pos);
 
-        let contructor_attribute = attribute_from_str("#[capybara_bindgen(constructor)]");
+        let contructor_attribute = attribute_from_str("#[capybara(constructor)]");
 
         let attribute_pos = rust_new
             .attrs
@@ -156,7 +156,7 @@ impl Pyo3Builder {
             .position(|x| &contructor_attribute == x);
 
         match attribute_pos {
-            None => panic!("A constructor must have a #[capybara_bindgen(constructor)] annotation"),
+            None => panic!("A constructor must have a #[capybara(constructor)] annotation"),
             Some(pos) => {
                 rust_new.attrs.remove(pos);
             }

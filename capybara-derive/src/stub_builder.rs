@@ -22,7 +22,7 @@ impl BindingBuilder for StubBuilder {
             fn visit_impl_item_method_mut(&mut self, method: &mut syn::ImplItemMethod) {
                 // For some unknown reason parse_quote fails here
                 let path_segment = syn::PathSegment {
-                    ident: syn::Ident::new("capybara_bindgen", Span::call_site()),
+                    ident: syn::Ident::new("capybara", Span::call_site()),
                     arguments: syn::PathArguments::None,
                 };
                 let path: syn::Path = path_segment.into();

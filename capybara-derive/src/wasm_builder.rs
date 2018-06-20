@@ -4,10 +4,10 @@ use super::BindingBuilder;
 use proc_macro2::{Span, TokenStream};
 use syn;
 
-const ATTRIBUTE_SELF: &str = "capybara_bindgen";
+const ATTRIBUTE_SELF: &str = "capybara";
 const ATTRIBUTE_WASM: &str = "wasm_bindgen";
 
-/// changes `#[capybara_bindgen(...)]` into `#[wasm_bindgen(...)]`
+/// changes `#[capybara(...)]` into `#[wasm_bindgen(...)]`
 struct AttributeTransformer;
 
 impl<'ast> syn::visit_mut::VisitMut for AttributeTransformer {
