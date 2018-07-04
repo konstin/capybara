@@ -1,4 +1,4 @@
-//! Beware, this code is mostly workarounds directly ported from syn 0.11
+// Beware, this code might still include some syn-0.11 artifacts
 
 extern crate pyo3_derive_backend;
 extern crate syn;
@@ -10,12 +10,6 @@ use syn::punctuated::Punctuated;
 use syn::token::Comma;
 
 pub struct Pyo3Builder;
-
-fn attribute_from_str(attr_str: &str) -> syn::Attribute {
-    let tokens = attr_str.parse().unwrap();
-    let buf = syn::buffer::TokenBuffer::new2(tokens);
-    syn::Attribute::parse_outer(buf.begin()).unwrap().0
-}
 
 /// This is the same boilerplate that pyo3 uses
 impl BindingBuilder for Pyo3Builder {
@@ -106,7 +100,7 @@ impl Pyo3Builder {
                 }
 
                 if is_static {
-                    method.attrs.push(attribute_from_str("#[staticmethod]"));
+                    method.attrs.push(parse_quote!(#[staticmethod]));
                 }
             } else {
                 panic!("Expected a method");
@@ -140,7 +134,7 @@ impl Pyo3Builder {
         // pyo3 can't deal with that method, so we remove it
         impl_items.remove(rust_new_pos);
 
-        let contructor_attribute = attribute_from_str("#[capybara(constructor)]");
+        let contructor_attribute : syn::Attribute = parse_quote!(#[capybara(constructor)]);
 
         let attribute_pos = rust_new
             .attrs

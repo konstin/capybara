@@ -27,8 +27,11 @@ mod wasm_builder;
 
 mod stub_builder;
 
-/// The heart of capybara: This attribute can be added to a struct to generate bindings for that struct,
-/// and then also to a plain impl block (i.e. not a trait implementation).
+/// The heart of capybara: This attribute can be added to a struct, its impl block and freestanding
+/// functions to create bindings for those items
+///
+/// You can define a language binding by implementing [BindingBuilder] on a unit struct and the
+/// init macro in the capybara crate
 #[proc_macro_attribute]
 pub fn capybara_bindgen(
     attr: proc_macro::TokenStream,
@@ -37,6 +40,7 @@ pub fn capybara_bindgen(
     capybara_bindgen_impl(attr, input)
 }
 
+/// Dispatches the tokenstream into the right builder method
 fn capybara_bindgen_impl(
     attr: proc_macro::TokenStream,
     input: proc_macro::TokenStream,
@@ -87,34 +91,19 @@ fn get_builder() -> &'static BindingBuilder {
     return &stub_builder::StubBuilder;
 }
 
-/// A language binding is defined by implementing this on a unit struct and the init macro
-///
 /// All methods have to take a self to make the dynamic dispatch via get_builder() possible.
 trait BindingBuilder {
-    /// Gets a struct
+    /// Implements bindings for a struct
     fn class(&self, attr: TokenStream, class: syn::ItemStruct) -> TokenStream;
-    /// Gets an impl block
+    /// Implements bindings for an impl block
     fn methods(&self, attr: TokenStream, methods: syn::ItemImpl) -> TokenStream;
-    /// Gets an extern block
+    /// Implements bindings for an extern block
     fn foreign_mod(&self, attr: TokenStream, foreign_mod: syn::ItemForeignMod) -> TokenStream;
-    /// A function in not a method
+    /// Implements bindings for a freestanding function
     fn function(&self, attr: TokenStream, function: syn::ItemFn) -> TokenStream;
 }
 
-#[allow(dead_code)]
-fn remove_constructor_attribute(method: &mut syn::ImplItemMethod) {
-    let constructor_attr: syn::Attribute = parse_quote!(#[capybara(constructor)]);
-
-    let attribute_pos = method.attrs.iter().position(|x| x == &constructor_attr);
-
-    match attribute_pos {
-        None => panic!("A constructor must have a #[capybara(constructor)] annotation"),
-        Some(pos) => {
-            method.attrs.remove(pos);
-        }
-    }
-}
-
+/// Prints macros with the debug-macros feature
 fn print_token_stream(tokens: TokenStream, level: usize) {
     for token in tokens.into_iter() {
         match token {

@@ -5,6 +5,19 @@ use syn;
 
 pub struct HelixBuilder;
 
+fn remove_constructor_attribute(method: &mut syn::ImplItemMethod) {
+    let constructor_attr: syn::Attribute = parse_quote!(#[capybara(constructor)]);
+
+    let attribute_pos = method.attrs.iter().position(|x| x == &constructor_attr);
+
+    match attribute_pos {
+        None => panic!("A constructor must have a #[capybara(constructor)] annotation"),
+        Some(pos) => {
+            method.attrs.remove(pos);
+        }
+    }
+}
+
 /// Despite being a variable in the macros, helix has this name hardcoded for the name of the
 /// constructor
 const INITIALIZE_HELIX: &'static str = "initialize";
@@ -96,7 +109,7 @@ impl HelixBuilder {
         if is_new {
             method.sig.ident = syn::Ident::new(INITIALIZE_HELIX, Span::call_site());
 
-            super::remove_constructor_attribute(&mut method);
+            remove_constructor_attribute(&mut method);
         }
 
         let tokens = self.parse_into_macro_part(&method, is_new);

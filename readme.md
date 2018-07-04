@@ -130,7 +130,7 @@ Capybara needs to rewrite your constructors to make them work with the underlyin
 #[capybara]
 pub struct ExportedClass {
     x: usize,
-    y: i32,
+    y: usize,
 }
 
 #[capybara]
@@ -140,7 +140,7 @@ impl ExportedClass {
         println!("Building an instance");
         ExportedClass {
             x,
-            y: -x,
+            y: x+3,
         }
     }
 }

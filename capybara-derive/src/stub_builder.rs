@@ -1,9 +1,11 @@
+//! Stub builder which is used when no language is targeted. Mostly no-op
+
 use super::BindingBuilder;
 use proc_macro2::{Span, TokenStream};
 use quote::ToTokens;
 use syn;
 
-/// This is stub target that does not emitt any bindings
+/// This is stub builder that does not emitt any bindings but removes the capybara-attributes
 pub struct StubBuilder;
 
 impl BindingBuilder for StubBuilder {
@@ -14,9 +16,9 @@ impl BindingBuilder for StubBuilder {
 
     /// Removes all the capybara_bindgen attributes
     fn methods(&self, _: TokenStream, mut impl_block: syn::ItemImpl) -> TokenStream {
-        struct Walk;
+        struct AttrRemover;
 
-        impl<'ast> syn::visit_mut::VisitMut for Walk {
+        impl<'ast> syn::visit_mut::VisitMut for AttrRemover {
             fn visit_impl_item_method_mut(&mut self, method: &mut syn::ImplItemMethod) {
                 // For some unknown reason parse_quote fails here
                 let path_segment = syn::PathSegment {
@@ -33,7 +35,7 @@ impl BindingBuilder for StubBuilder {
             }
         }
 
-        syn::visit_mut::VisitMut::visit_item_impl_mut(&mut Walk, &mut impl_block);
+        syn::visit_mut::VisitMut::visit_item_impl_mut(&mut AttrRemover, &mut impl_block);
 
         impl_block.into_token_stream()
     }
