@@ -23,8 +23,7 @@ impl<'ast> syn::visit_mut::VisitMut for AttributeTransformer {
 pub struct WasmBuilder;
 
 impl WasmBuilder {
-    fn wasm_impl(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let mut item = syn::parse2::<syn::Item>(input).expect("Expected a valid Rust item");
+    fn wasm_impl(&self, _: TokenStream, mut item: syn::Item) -> TokenStream {
         syn::visit_mut::VisitMut::visit_item_mut(&mut AttributeTransformer, &mut item);
 
         // For now no wasm_bindgen attributes are supported
@@ -42,19 +41,19 @@ impl WasmBuilder {
 }
 
 impl BindingBuilder for WasmBuilder {
-    fn class(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
-        self.wasm_impl(attr, input)
+    fn class(&self, attr: TokenStream, class: syn::ItemStruct) -> TokenStream {
+        self.wasm_impl(attr, syn::Item::Struct(class))
     }
 
-    fn methods(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
-        self.wasm_impl(attr, input)
+    fn methods(&self, attr: TokenStream, input: syn::ItemImpl) -> TokenStream {
+        self.wasm_impl(attr, syn::Item::Impl(input))
     }
 
-    fn foreign_mod(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
-        self.wasm_impl(attr, input)
+    fn foreign_mod(&self, attr: TokenStream, input: syn::ItemForeignMod) -> TokenStream {
+        self.wasm_impl(attr, syn::Item::ForeignMod(input))
     }
 
-    fn function(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
-        self.wasm_impl(attr, input)
+    fn function(&self, attr: TokenStream, input: syn::ItemFn) -> TokenStream {
+        self.wasm_impl(attr, syn::Item::Fn(input))
     }
 }

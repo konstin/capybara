@@ -19,9 +19,7 @@ fn attribute_from_str(attr_str: &str) -> syn::Attribute {
 
 /// This is the same boilerplate that pyo3 uses
 impl BindingBuilder for Pyo3Builder {
-    fn class(&self, attr: TokenStream, input: TokenStream) -> TokenStream {
-        let mut class = syn::parse2(input).unwrap();
-
+    fn class(&self, attr: TokenStream, mut class: syn::ItemStruct) -> TokenStream {
         let args: Vec<syn::Expr> = {
             let buffer = TokenBuffer::new2(attr);
             let punc = Punctuated::<syn::Expr, Comma>::parse_terminated(buffer.begin());
@@ -32,17 +30,13 @@ impl BindingBuilder for Pyo3Builder {
         };
 
         let expanded = pyo3_derive_backend::py_class::build_py_class(&mut class, &args);
-        let tokens = quote!(
+        quote!(
             #class
             #expanded
-        );
-
-        tokens.into()
+        )
     }
 
-    fn methods(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let mut impl_block: syn::ItemImpl = syn::parse2(input).expect("Expected an impl block");
-
+    fn methods(&self, _: TokenStream, mut impl_block: syn::ItemImpl) -> TokenStream {
         let classname = impl_block.self_ty.clone();
         let constructor = Pyo3Builder::constructor(&mut impl_block.items, &classname);
         Pyo3Builder::add_function_annotations(&mut impl_block.items);
@@ -76,16 +70,14 @@ impl BindingBuilder for Pyo3Builder {
         }
     }
 
-    fn foreign_mod(&self, _: TokenStream, _: TokenStream) -> TokenStream {
+    fn foreign_mod(&self, _: TokenStream, _: syn::ItemForeignMod) -> TokenStream {
         unimplemented!()
     }
 
-    fn function(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let mut item_fn: syn::ItemFn = syn::parse2(input).unwrap();
-
+    fn function(&self, _: TokenStream, item_fn: syn::ItemFn) -> TokenStream {
         let python_name = item_fn.ident.clone();
         let expanded =
-            pyo3_derive_backend::module::add_fn_to_module(&mut item_fn, &python_name, Vec::new());
+            pyo3_derive_backend::module::add_fn_to_module(&item_fn, &python_name, Vec::new());
 
         let tokens = quote!(
             #item_fn
@@ -176,10 +168,7 @@ impl Pyo3Builder {
             })
             .collect();
 
-        // I've tried building this with syn primitives but the code became unmanagable,
-        // so yes, I'm actually doing this with serializing and deserializing
-        // (Now that this code is ported to syn 0.13, there might be a better way to do this)
-        let pyo3_new = quote!(
+        let pyo3_new: syn::ImplItem = parse_quote!(
             #[new]
             fn __new__(obj: &PyRawObject, #(#args_decl,)*) -> PyResult<()> {
                 obj.init(|_| {
@@ -187,8 +176,6 @@ impl Pyo3Builder {
                 })
             }
         );
-
-        let pyo3_new: syn::ImplItem = syn::parse2(pyo3_new).unwrap();
 
         Some((syn::ImplItem::Method(rust_new), pyo3_new, rust_new_pos))
     }

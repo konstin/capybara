@@ -1,5 +1,6 @@
-use proc_macro2::{Span, TokenStream};
 use super::BindingBuilder;
+use proc_macro2::{Span, TokenStream};
+use quote::ToTokens;
 use syn;
 
 pub struct HelixBuilder;
@@ -107,9 +108,9 @@ impl HelixBuilder {
                 .pop()
                 .expect("The new function must have at least one statement");
             match last {
-                syn::Stmt::Expr(syn::Expr::Struct(ref mut expr_struct)) => expr_struct
-                    .fields
-                    .insert(0, parse_quote!(helix)),
+                syn::Stmt::Expr(syn::Expr::Struct(ref mut expr_struct)) => {
+                    expr_struct.fields.insert(0, parse_quote!(helix))
+                }
                 _ => panic!(
                     "The last statement of a function must be the instantiation of the struct"
                 ),
@@ -129,8 +130,14 @@ impl HelixBuilder {
 
 impl BindingBuilder for HelixBuilder {
     /// Calls codegen_from_struct!
-    fn class(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let class: syn::ItemStruct = syn::parse2(input).unwrap();
+    fn class(&self, _: TokenStream, class: syn::ItemStruct) -> TokenStream {
+        match class.vis {
+            syn::Visibility::Public(_) => {}
+            _ => panic!(
+                "Structs must be public, but {} isn't",
+                class.ident.to_string()
+            ),
+        }
         let rust_name = &class.ident;
         let struct_body = class.struct_token;
 
@@ -144,10 +151,7 @@ impl BindingBuilder for HelixBuilder {
         });
 
         quote!(
-            codegen_from_struct! {
-                #class
-            }
-
+            codegen_from_struct!(#class);
             codegen_coercions!(#extra_codegen_body);
             codegen_allocator!(#extra_codegen_body);
         )
@@ -155,8 +159,7 @@ impl BindingBuilder for HelixBuilder {
 
     /// Handles some parsing boilerplate and the invocation of codegen_ruby_init!. The actual work
     /// is done by [HelixBuilder::method] and [HelixBuild::parse_into_macro_part]
-    fn methods(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let mut impl_block: syn::ItemImpl = syn::parse2(input).unwrap();
+    fn methods(&self, _: TokenStream, mut impl_block: syn::ItemImpl) -> TokenStream {
         let rust_name = impl_block.self_ty.clone();
 
         let mut methods_tokens = vec![];
@@ -195,12 +198,12 @@ impl BindingBuilder for HelixBuilder {
         }
     }
 
-    fn foreign_mod(&self, _: TokenStream, _: TokenStream) -> TokenStream {
+    fn foreign_mod(&self, _: TokenStream, _: syn::ItemForeignMod) -> TokenStream {
         unimplemented!()
     }
 
-    fn function(&self, _: TokenStream, input: TokenStream) -> TokenStream {
+    fn function(&self, _: TokenStream, function: syn::ItemFn) -> TokenStream {
         eprintln!("Functions are not yet available for ruby. (Skipping)");
-        input
+        function.into_token_stream()
     }
 }

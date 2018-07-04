@@ -46,17 +46,16 @@ fn capybara_bindgen_impl(
     let builder = get_builder();
 
     let generated = match item {
-        syn::Item::ForeignMod(_) => builder.foreign_mod(attr.into(), input.into()),
-        syn::Item::Struct(_) => builder.class(attr.into(), input.into()),
-        syn::Item::Impl(_) => builder.methods(attr.into(), input.into()),
-        syn::Item::Fn(_) => builder.function(attr.into(), input.into()),
+        syn::Item::ForeignMod(foreign_mod) => builder.foreign_mod(attr.into(), foreign_mod),
+        syn::Item::Struct(class) => builder.class(attr.into(), class),
+        syn::Item::Impl(methods) => builder.methods(attr.into(), methods),
+        syn::Item::Fn(function) => builder.function(attr.into(), function),
         _ => panic!("This kind of item isn't supported"),
     };
 
     if cfg!(feature = "debug-macros") {
         print_token_stream(generated.clone(), 0);
     }
-
 
     generated.into()
 }
@@ -93,13 +92,13 @@ fn get_builder() -> &'static BindingBuilder {
 /// All methods have to take a self to make the dynamic dispatch via get_builder() possible.
 trait BindingBuilder {
     /// Gets a struct
-    fn class(&self, attr: TokenStream, input: TokenStream) -> TokenStream;
+    fn class(&self, attr: TokenStream, class: syn::ItemStruct) -> TokenStream;
     /// Gets an impl block
-    fn methods(&self, attr: TokenStream, input: TokenStream) -> TokenStream;
+    fn methods(&self, attr: TokenStream, methods: syn::ItemImpl) -> TokenStream;
     /// Gets an extern block
-    fn foreign_mod(&self, attr: TokenStream, input: TokenStream) -> TokenStream;
+    fn foreign_mod(&self, attr: TokenStream, foreign_mod: syn::ItemForeignMod) -> TokenStream;
     /// A function in not a method
-    fn function(&self, attr: TokenStream, input: TokenStream) -> TokenStream;
+    fn function(&self, attr: TokenStream, function: syn::ItemFn) -> TokenStream;
 }
 
 #[allow(dead_code)]

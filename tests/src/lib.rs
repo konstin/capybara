@@ -17,7 +17,7 @@ pub struct ExportedClass {
 
 #[capybara]
 impl ExportedClass {
-    #[capybara_bindgen(constructor)]
+    #[capybara(constructor)]
     pub fn new(number: i32) -> ExportedClass {
         ExportedClass { number }
     }

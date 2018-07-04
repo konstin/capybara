@@ -8,14 +8,12 @@ pub struct StubBuilder;
 
 impl BindingBuilder for StubBuilder {
     /// no-op
-    fn class(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        input
+    fn class(&self, _: TokenStream, class: syn::ItemStruct) -> TokenStream {
+        class.into_token_stream()
     }
 
     /// Removes all the capybara_bindgen attributes
-    fn methods(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        let mut impl_block: syn::ItemImpl = syn::parse2(input).unwrap();
-
+    fn methods(&self, _: TokenStream, mut impl_block: syn::ItemImpl) -> TokenStream {
         struct Walk;
 
         impl<'ast> syn::visit_mut::VisitMut for Walk {
@@ -41,12 +39,12 @@ impl BindingBuilder for StubBuilder {
     }
 
     /// no-op
-    fn foreign_mod(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        input
+    fn foreign_mod(&self, _: TokenStream, input: syn::ItemForeignMod) -> TokenStream {
+        input.into_token_stream()
     }
 
     /// no-op
-    fn function(&self, _: TokenStream, input: TokenStream) -> TokenStream {
-        input
+    fn function(&self, _: TokenStream, input: syn::ItemFn) -> TokenStream {
+        input.into_token_stream()
     }
 }
