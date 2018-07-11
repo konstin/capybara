@@ -3,7 +3,7 @@
 A framework for generating bindings from Rust to arbitrary languages. Currently supports python (via [pyo3](https://github.com/PyO3/pyo3)), ruby
 (via [helix](https://github.com/tildeio/helix)) and wasm/js (via [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)) are supported.
 
-**Note: This is in alpha stage. You can't do much more than structs, methods and functions with the basic types yet.**
+**Note: This is in alpha stage. You can't do much more than structs, methods and functions with the basic types yet.** (And in ruby not even freestanding functions yet)
 
 ## Usage
 
@@ -39,7 +39,7 @@ impl ExportedClass {
 ```
 
 We also need to generate an extrypoint for module/package/gem on the target site. This is done by calling `capybara_init!`
-with the name of module/package and the names of the structs to generate classes form.
+with the name of module/package, the names of the structs to generate classes from and the names of the functions to be exported.
 
 ```rust
 capybara_init! {capybara_test, [ExportedClass], [double]}
@@ -54,7 +54,7 @@ crate-type = ["cdylib"]
 ```
 
 If you only target a single language, you can use the `features` option. Available are "python", "ruby" and "wasm".
-Note that these options are mutually exclusive.
+These options are mutually exclusive.
 
 ```toml
 [dependencies]
@@ -115,9 +115,8 @@ The main goal is making capybara as _intuitive_ as possible, meaning that you ca
  * Special methods (equals, comparisons, hashing)
  * Conversions
  * Returning errors
- * Exporting trait implementations
+ * Exporting trait implementations (esp. Eq, Display, Ord and Hash)
  * Importing via extern blocks
- * Review the BindingBuilder trait for better interface options
  * Accessors for public fields outside of wasm_bindgen
 
 ## Advanced Usage
@@ -146,13 +145,29 @@ impl ExportedClass {
 }
 ```
 
-## Debugging your application
+## Debugging
 
-You can view expanded code with the following command, or at least get a macro trace for helix. You might need to have rustfmt installed.
+The most convenient solution is [cargo expand](https://github.com/dtolnay/cargo-expand).
 
-```bash
-cargo rustc -- -Z unstable-options --pretty=expanded -Z trace-macros > expanded.rs; rustfmt expanded.rs
+Without installing cargo expand, you can use
+
+```shell
+cargo rustc --profile=check -- -Zunstable-options --pretty=expanded
 ```
+
+With rustfmt installed, you can get easily get a pretty-printed version
+
+```shell
+cargo rustc --profile=check -- -Zunstable-options --pretty=expanded > expanded.rs; rustfmt expanded.rs
+```
+
+For helix, tracing macro expansion can be relevant
+
+```shell
+cargo rustc --profile=check -- -Z unstable-options --pretty=expanded -Z trace-macros > expanded.rs; rustfmt expanded.rs
+```
+
+There is also a "debug-macros" features which dumps the token stream with the hygiene information.
 
 ## Testing
 
@@ -174,5 +189,3 @@ This project is licensed under either of
    http://opensource.org/licenses/MIT)
 
 at your option.
-
-

@@ -1,4 +1,4 @@
-// Beware, this code might still include some syn-0.11 artifacts
+// Beware, this code still includes some syn-0.11 artifacts
 
 extern crate pyo3_derive_backend;
 extern crate syn;
@@ -134,7 +134,7 @@ impl Pyo3Builder {
         // pyo3 can't deal with that method, so we remove it
         impl_items.remove(rust_new_pos);
 
-        let contructor_attribute : syn::Attribute = parse_quote!(#[capybara(constructor)]);
+        let contructor_attribute: syn::Attribute = parse_quote!(#[capybara(constructor)]);
 
         let attribute_pos = rust_new
             .attrs

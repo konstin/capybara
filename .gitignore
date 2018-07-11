@@ -1,12 +1,19 @@
-pyo3/
-helix/
 target/
-venv/
+Cargo.lock
+
+# wasm
 node_modules/
 tests/capybara_test*
+
+# ruby
 tests/vendor
 tests/lib/capybara-test
+helix/
+
+# python
+venv/
+
+# Compare codegen
 compare-codegen/capybara-*.rs
 compare-codegen/native-*.rs
-Cargo.lock
 expanded.rs

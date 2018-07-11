@@ -1,4 +1,10 @@
-#![feature(proc_macro, specialization, wasm_import_module, wasm_custom_section, concat_idents)]
+#![feature(
+    proc_macro,
+    specialization,
+    wasm_import_module,
+    wasm_custom_section,
+    concat_idents
+)]
 
 #[macro_use]
 extern crate capybara;

@@ -1,7 +1,7 @@
 # Installing the different toolchains
 
 ## rust via rustup
-curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh -s -- --default-toolchain=nightly-2018-04-06 -y
+curl https://sh.rustup.rs -sSf | sh
 export PATH="$PATH:~/.cargo/bin"
 
 ## rbenv for ruby
