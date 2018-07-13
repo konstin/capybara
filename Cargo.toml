@@ -26,7 +26,3 @@ members = [
     "tests",
     "compare-codegen/*/",
 ]
-
-exclude = [
-    "helix",
-]
