@@ -5,7 +5,7 @@ version = "0.1.0"
 
 [dependencies]
 quote = "0.6"
-pyo3-derive-backend = { git = "https://github.com/PyO3/pyo3", rev="2ffa302a8da3551f288b2881897f0f00d5a16660", optional = true }
+pyo3-derive-backend = { version = "0.3.0", optional = true }
 helix = { git = "https://github.com/konstin/helix", branch = "capybara",  optional = true }
 wasm-bindgen-backend = { version = "0.2.11", optional = true }
 

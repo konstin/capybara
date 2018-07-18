@@ -3,7 +3,7 @@
 //!  - Generating method bindings from impl blocks
 //!  - Generating the FFI-Entrypoint with a macro
 
-#![feature(proc_macro, specialization, const_fn)]
+#![feature(use_extern_macro, specialization)]
 #![recursion_limit = "1024"]
 
 extern crate proc_macro;

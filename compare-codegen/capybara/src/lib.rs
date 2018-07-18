@@ -1,5 +1,5 @@
 #![feature(
-    proc_macro,
+    use_extern_macros,
     specialization,
     wasm_import_module,
     wasm_custom_section

@@ -177,7 +177,9 @@ There is also `compare-codegen/expand.sh`, which allows easily comparing the cod
 
 ### Contributing
 
-Please run `cargo fmt` and - if you are on linux or mac - `./test.sh`.
+Contributions are welcome!
+
+Please run `cargo fmt` and - if you are on linux or mac - `./test.sh` before submitting pull requests.
 
 ## License
 

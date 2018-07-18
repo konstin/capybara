@@ -1,4 +1,4 @@
-#![feature(proc_macro,specialization)]
+#![feature(use_extern_macros, specialization)]
 
 extern crate pyo3;
 
