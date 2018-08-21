@@ -1,9 +1,8 @@
-#![feature(use_extern_macros, specialization)]
+#![feature(specialization)]
 
 extern crate pyo3;
 
 use pyo3::prelude::*;
-use pyo3::{pyclass, pymethods, pymodinit};
 
 #[pyclass]
 pub struct ExportedClass {

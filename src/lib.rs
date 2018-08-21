@@ -1,4 +1,5 @@
-#![feature(use_extern_macros, specialization, external_doc)]
+#![feature(specialization, external_doc)]
+
 #![doc(include = "../Readme.md")]
 
 extern crate capybara_derive;
@@ -57,16 +58,24 @@ compile_error!("You need to pass --target wasm32-unknown-unknown to compile to w
 /// # Example
 ///
 /// ```
-/// # #![feature(proc_macro, specialization, wasm_import_module, wasm_custom_section, concat_idents)]
-/// # use capybara::*;
-/// # use capybara::prelude::*;
+/// # #![feature(specialization)]
+/// #
+/// # #[macro_use]
+/// # extern crate capybara;
+/// #
+/// use capybara::prelude::*;
+///
 /// #[capybara]
 /// fn say_hello() {
 ///    println!("Hello world");
 /// }
+///
 /// #[capybara]
 /// pub struct ExportedClass {}
+///
 /// capybara_init! {my_module, [ExportedClass], [say_hello]}
+///
+/// # fn main() {}
 /// ```
 #[cfg(not(any(feature = "python", feature = "ruby")))]
 #[macro_export]

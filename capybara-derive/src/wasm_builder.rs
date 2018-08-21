@@ -1,5 +1,7 @@
 extern crate wasm_bindgen_backend as backend;
+extern crate wasm_bindgen_macro_support as macro_support;
 
+use self::macro_support::expand;
 use super::BindingBuilder;
 use proc_macro2::{Span, TokenStream};
 use syn;
@@ -26,17 +28,10 @@ impl WasmBuilder {
     fn wasm_impl(&self, _: TokenStream, mut item: syn::Item) -> TokenStream {
         syn::visit_mut::VisitMut::visit_item_mut(&mut AttributeTransformer, &mut item);
 
-        // For now no wasm_bindgen attributes are supported
-        let opts = backend::ast::BindgenAttrs::default();
-
-        let mut ret = TokenStream::new();
-        let mut program = backend::ast::Program::default();
-        program.push_item(item, Some(opts), &mut ret);
-
-        quote!(
-            #ret
-            #program
-        )
+        match expand(quote!(), quote!(#item)) {
+            Ok(tokens) => tokens.into(),
+            Err(diagnostic) => (quote! { #diagnostic }).into(),
+        }
     }
 }
 

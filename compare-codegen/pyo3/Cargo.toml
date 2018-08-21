@@ -4,4 +4,4 @@ version = "0.1.0"
 authors = ["konstin <konstin@mailbox.org>"]
 
 [dependencies]
-pyo3 = { git = "https://github.com/PyO3/pyo3", rev="2ffa302a8da3551f288b2881897f0f00d5a16660", features = ["extension-module"] }
+pyo3 = { version = "0.4.1", features = ["extension-module"] }

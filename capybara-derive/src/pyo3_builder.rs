@@ -159,8 +159,7 @@ impl Pyo3Builder {
             .map(|x| match x {
                 syn::FnArg::Captured(captured) => captured.pat.clone(),
                 _ => panic!("Argument type not expected in constructor: {:?}", x),
-            })
-            .collect();
+            }).collect();
 
         let pyo3_new: syn::ImplItem = parse_quote!(
             #[new]

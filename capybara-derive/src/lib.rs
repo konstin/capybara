@@ -3,14 +3,16 @@
 //!  - Generating method bindings from impl blocks
 //!  - Generating the FFI-Entrypoint with a macro
 
-#![feature(use_extern_macro, specialization)]
+#![feature(specialization)]
 #![recursion_limit = "1024"]
 
 extern crate proc_macro;
 extern crate proc_macro2;
 
+#[allow(unused_imports)]
 #[macro_use]
 extern crate quote;
+#[allow(unused_imports)]
 #[macro_use]
 extern crate syn;
 
@@ -45,7 +47,7 @@ fn capybara_bindgen_impl(
     attr: proc_macro::TokenStream,
     input: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
-    let item: syn::Item = syn::parse(input.clone()).unwrap();
+    let item: syn::Item = syn::parse(input).unwrap();
 
     let builder = get_builder();
 
@@ -66,6 +68,7 @@ fn capybara_bindgen_impl(
 
 /// A workaround for getting feaature-independent typings
 #[allow(unreachable_code)]
+#[cfg_attr(feature = "cargo-clippy", allow(needless_return))]
 fn get_builder() -> &'static BindingBuilder {
     let features = vec![
         cfg!(feature = "ruby"),
@@ -105,7 +108,7 @@ trait BindingBuilder {
 
 /// Prints macros with the debug-macros feature
 fn print_token_stream(tokens: TokenStream, level: usize) {
-    for token in tokens.into_iter() {
+    for token in tokens {
         match token {
             proc_macro2::TokenTree::Group(ref group) => {
                 let (open, close) = match group.delimiter() {

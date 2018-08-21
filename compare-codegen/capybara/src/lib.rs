@@ -1,9 +1,4 @@
-#![feature(
-    use_extern_macros,
-    specialization,
-    wasm_import_module,
-    wasm_custom_section
-)]
+#![feature(specialization)]
 
 #[macro_use]
 extern crate capybara;
