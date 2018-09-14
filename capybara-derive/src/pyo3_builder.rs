@@ -5,23 +5,21 @@ extern crate syn;
 
 use super::BindingBuilder;
 use proc_macro2::TokenStream;
-use syn::buffer::TokenBuffer;
 use syn::punctuated::Punctuated;
-use syn::token::Comma;
+use syn::parse::Parser;
 
 pub struct Pyo3Builder;
 
 /// This is the same boilerplate that pyo3 uses
 impl BindingBuilder for Pyo3Builder {
     fn class(&self, attr: TokenStream, mut class: syn::ItemStruct) -> TokenStream {
-        let args: Vec<syn::Expr> = {
-            let buffer = TokenBuffer::new2(attr);
-            let punc = Punctuated::<syn::Expr, Comma>::parse_terminated(buffer.begin());
-            punc.expect("could not parse macro arguments")
-                .0
-                .into_iter()
-                .collect()
-        };
+        let parser = Punctuated::<syn::Expr, Token![,]>::parse_terminated;
+        let error_message = "The macro attributes should be a list of comma separated expressions";
+        let args = parser
+            .parse(attr.into())
+            .expect(error_message)
+            .into_iter()
+            .collect();
 
         let expanded = pyo3_derive_backend::py_class::build_py_class(&mut class, &args);
         quote!(

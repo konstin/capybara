@@ -1,5 +1,4 @@
 #![feature(specialization, external_doc)]
-
 #![doc(include = "../Readme.md")]
 
 extern crate capybara_derive;

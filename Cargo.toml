@@ -17,10 +17,10 @@ wasm = ["capybara-derive/wasm", "wasm-bindgen"]
 debug-macros = ["capybara-derive/debug-macros"]
 
 [dependencies]
-pyo3 = { version = "0.4.1", features = ["extension-module"], optional = true }
+pyo3 = { git = "https://github.com/PyO3/pyo3", features = ["extension-module"], optional = true }
 helix = { git = "https://github.com/konstin/helix", branch = "capybara",  optional = true }
 capybara-derive = { path = "capybara-derive" }
-wasm-bindgen = { version = "0.2.17", optional = true }
+wasm-bindgen = { version = "=0.2.21", optional = true }
 
 [workspace]
 members = [
