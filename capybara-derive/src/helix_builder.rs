@@ -78,14 +78,16 @@ impl HelixBuilder {
                 ownership: {},
                 name: self
             }),
-            _ => if is_new {
-                quote!({
+            _ => {
+                if is_new {
+                    quote!({
                     ownership: { },
                     name: helix
                 })
-            } else {
-                quote!(())
-            },
+                } else {
+                    quote!(())
+                }
+            }
         };
 
         let rust_name = &method.sig.ident;

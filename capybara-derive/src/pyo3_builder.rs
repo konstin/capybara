@@ -5,8 +5,8 @@ extern crate syn;
 
 use super::BindingBuilder;
 use proc_macro2::TokenStream;
-use syn::punctuated::Punctuated;
 use syn::parse::Parser;
+use syn::punctuated::Punctuated;
 
 pub struct Pyo3Builder;
 
@@ -157,7 +157,8 @@ impl Pyo3Builder {
             .map(|x| match x {
                 syn::FnArg::Captured(captured) => captured.pat.clone(),
                 _ => panic!("Argument type not expected in constructor: {:?}", x),
-            }).collect();
+            })
+            .collect();
 
         let pyo3_new: syn::ImplItem = parse_quote!(
             #[new]

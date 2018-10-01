@@ -3,7 +3,6 @@
 //!  - Generating method bindings from impl blocks
 //!  - Generating the FFI-Entrypoint with a macro
 
-#![feature(specialization, tool_lints)]
 #![recursion_limit = "1024"]
 
 extern crate proc_macro;
@@ -68,7 +67,7 @@ fn capybara_bindgen_impl(
 
 /// A workaround for getting feaature-independent typings
 #[allow(unreachable_code)]
-#[allow(clippy::needless_return)]
+#[cfg_attr(feature = "cargo-clippy", allow(clippy::needless_return))]
 fn get_builder() -> &'static BindingBuilder {
     let features = vec![
         cfg!(feature = "ruby"),
