@@ -59,6 +59,7 @@ fn capybara_bindgen_impl(
     };
 
     if cfg!(feature = "debug-macros") {
+        println!("{}", generated);
         print_token_stream(generated.clone(), 0);
     }
 

@@ -163,7 +163,7 @@ impl Pyo3Builder {
         let pyo3_new: syn::ImplItem = parse_quote!(
             #[new]
             fn __new__(obj: &PyRawObject, #(#args_decl,)*) -> PyResult<()> {
-                obj.init(|_| {
+                obj.init(|| {
                     #classname::new(#(#args_usage,)*)
                 })
             }
