@@ -13,7 +13,7 @@ pub struct ExportedClass {
 impl ExportedClass {
     #[new]
     fn __new__(obj: &PyRawObject, number: i32) -> PyResult<()> {
-        obj.init(|| ExportedClass { number })
+        obj.init(|_| ExportedClass { number })
     }
 
     #[staticmethod]
