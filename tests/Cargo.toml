@@ -2,6 +2,7 @@
 authors = ["konstin <konstin@mailbox.org>"]
 name = "capybara-test"
 version = "0.1.0"
+edition = "2018"
 
 [lib]
 name = "capybara_test"

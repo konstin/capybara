@@ -81,9 +81,9 @@ impl HelixBuilder {
             _ => {
                 if is_new {
                     quote!({
-                    ownership: { },
-                    name: helix
-                })
+                        ownership: { },
+                        name: helix
+                    })
                 } else {
                     quote!(())
                 }
@@ -136,7 +136,7 @@ impl HelixBuilder {
                 .sig
                 .decl
                 .inputs
-                .insert(0, parse_quote!(helix: ::Metadata));
+                .insert(0, parse_quote!(helix: Metadata));
         }
 
         (method, tokens)
@@ -166,7 +166,7 @@ impl BindingBuilder for HelixBuilder {
         });
 
         quote!(
-            codegen_from_struct!(#class);
+            capybara::codegen_from_struct!(#class);
             codegen_coercions!(#extra_codegen_body);
             codegen_allocator!(#extra_codegen_body);
         )

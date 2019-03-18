@@ -1,8 +1,6 @@
 #![feature(specialization)]
 
-#[macro_use]
-extern crate capybara;
-
+use capybara::capybara_init;
 use capybara::prelude::*;
 
 #[capybara]

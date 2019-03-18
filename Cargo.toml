@@ -7,6 +7,7 @@ readme = "readme.md"
 keywords = ["ffi", "bindings", "pyo3", "python", "helix", "ruby", "rails"]
 categories = ["api-bindings", "development-tools::ffi"]
 license = "Apache-2.0 OR MIT"
+edition = "2018"
 
 [features]
 python = ["capybara-derive/python", "pyo3"]
@@ -17,10 +18,10 @@ wasm = ["capybara-derive/wasm", "wasm-bindgen"]
 debug-macros = ["capybara-derive/debug-macros"]
 
 [dependencies]
-pyo3 = { version = "=0.5.2", features = ["extension-module"], optional = true }
-helix = { git = "https://github.com/konstin/helix", rev = "968932e47cf798dfef28eacc0e35672af588f7f7",  optional = true }
+pyo3 = { version = "=0.6.0-alpha.4", features = ["extension-module"], optional = true }
+helix = { git = "https://github.com/konstin/helix", branch = "capybara",  optional = true }
 capybara-derive = { path = "capybara-derive" }
-wasm-bindgen = { version = "=0.2.29", optional = true }
+wasm-bindgen = { version = "=0.2.39", optional = true }
 
 [workspace]
 members = [
@@ -28,3 +29,9 @@ members = [
     "tests",
     "compare-codegen/*/",
 ]
+
+[patch.crates-io]
+pyo3 = { git = "https://github.com/pyo3/pyo3", rev = "d8dc3a17bd75d374116df619c749e6777963185f"}
+pyo3-derive-backend = { git = "https://github.com/pyo3/pyo3", rev = "d8dc3a17bd75d374116df619c749e6777963185f" }
+wasm-bindgen-macro-support = { git = "https://github.com/konstin/wasm-bindgen", branch = "reexporting_in_2018" }
+wasm-bindgen-backend = { git = "https://github.com/konstin/wasm-bindgen", branch = "reexporting_in_2018" }

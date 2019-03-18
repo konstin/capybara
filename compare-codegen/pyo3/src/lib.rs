@@ -1,7 +1,5 @@
 #![feature(specialization)]
 
-extern crate pyo3;
-
 use pyo3::prelude::*;
 
 #[pyclass]
@@ -12,8 +10,8 @@ pub struct ExportedClass {
 #[pymethods]
 impl ExportedClass {
     #[new]
-    fn __new__(obj: &PyRawObject, number: i32) -> PyResult<()> {
-        obj.init(|_| ExportedClass { number })
+    fn __new__(obj: &pyo3::type_object::PyRawObject, number: i32) {
+        obj.init(ExportedClass { number })
     }
 
     #[staticmethod]
@@ -45,7 +43,7 @@ impl ExportedClass {
     }
 }
 
-#[pymodinit]
+#[pymodule]
 fn capybara_test(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<ExportedClass>().unwrap();
     Ok(())

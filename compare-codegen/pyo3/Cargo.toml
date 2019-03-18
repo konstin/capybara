@@ -2,6 +2,7 @@
 name = "compare-codegen-pyo3"
 version = "0.1.0"
 authors = ["konstin <konstin@mailbox.org>"]
+edition = "2018"
 
 [dependencies]
-pyo3 = { version = "=0.5.2", features = ["extension-module"] }
+pyo3 = { version = "=0.6.0-alpha.4", features = ["extension-module"] }

@@ -5,27 +5,21 @@ extern crate syn;
 
 use super::BindingBuilder;
 use proc_macro2::TokenStream;
-use syn::parse::Parser;
-use syn::punctuated::Punctuated;
 
 pub struct Pyo3Builder;
 
 /// This is the same boilerplate that pyo3 uses
 impl BindingBuilder for Pyo3Builder {
-    fn class(&self, attr: TokenStream, mut class: syn::ItemStruct) -> TokenStream {
-        let parser = Punctuated::<syn::Expr, Token![,]>::parse_terminated;
-        let error_message = "The macro attributes should be a list of comma separated expressions";
-        let args = parser
-            .parse(attr.into())
-            .expect(error_message)
-            .into_iter()
-            .collect();
+    fn class(&self, attr: TokenStream, mut ast: syn::ItemStruct) -> TokenStream {
+        let args: pyo3_derive_backend::PyClassArgs = syn::parse2(attr).unwrap();
+        let expanded = pyo3_derive_backend::build_py_class(&mut ast, &args)
+            .unwrap_or_else(|e| e.to_compile_error());
 
-        let expanded = pyo3_derive_backend::py_class::build_py_class(&mut class, &args);
         quote!(
-            #class
+            #ast
             #expanded
         )
+        .into()
     }
 
     fn methods(&self, _: TokenStream, mut impl_block: syn::ItemImpl) -> TokenStream {
@@ -41,8 +35,7 @@ impl BindingBuilder for Pyo3Builder {
             None
         };
 
-        let expanded =
-            pyo3_derive_backend::py_impl::impl_methods(&classname, &mut impl_block.items);
+        let expanded = pyo3_derive_backend::impl_methods(&classname, &mut impl_block.items);
 
         if let Some(new_method_impl) = rust_new {
             // Add the initial new method back
@@ -68,8 +61,7 @@ impl BindingBuilder for Pyo3Builder {
 
     fn function(&self, _: TokenStream, item_fn: syn::ItemFn) -> TokenStream {
         let python_name = item_fn.ident.clone();
-        let expanded =
-            pyo3_derive_backend::module::add_fn_to_module(&item_fn, &python_name, Vec::new());
+        let expanded = pyo3_derive_backend::add_fn_to_module(&item_fn, &python_name, Vec::new());
 
         let tokens = quote!(
             #item_fn
@@ -162,8 +154,8 @@ impl Pyo3Builder {
 
         let pyo3_new: syn::ImplItem = parse_quote!(
             #[new]
-            fn __new__(obj: &PyRawObject, #(#args_decl,)*) -> PyResult<()> {
-                obj.init(|_| {
+            fn __new__(obj: &pyo3::type_object::PyRawObject, #(#args_decl,)*) {
+                obj.init({
                     #classname::new(#(#args_usage,)*)
                 })
             }
