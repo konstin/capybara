@@ -8,8 +8,8 @@ edition = "2018"
 quote = "0.6.11"
 pyo3-derive-backend = { version = "=0.6.0-alpha.4", optional = true }
 helix = { git = "https://github.com/konstin/helix", branch = "capybara",  optional = true }
-wasm-bindgen-macro-support = { version = "=0.2.39", optional = true }
-wasm-bindgen-backend = { version = "=0.2.39", optional = true }
+wasm-bindgen-macro-support = { version = "=0.2.40", optional = true }
+wasm-bindgen-backend = { version = "=0.2.40", optional = true }
 syn = { features = ["full", "extra-traits", "visit-mut"], version = "0.15.29" }
 proc-macro2 = { version = "0.4.27", features = ["nightly"] }
 

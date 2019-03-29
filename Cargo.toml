@@ -21,7 +21,7 @@ debug-macros = ["capybara-derive/debug-macros"]
 pyo3 = { version = "=0.6.0-alpha.4", features = ["extension-module"], optional = true }
 helix = { git = "https://github.com/konstin/helix", branch = "capybara",  optional = true }
 capybara-derive = { path = "capybara-derive" }
-wasm-bindgen = { version = "=0.2.39", optional = true }
+wasm-bindgen = { version = "=0.2.40", optional = true }
 
 [workspace]
 members = [
@@ -33,5 +33,5 @@ members = [
 [patch.crates-io]
 pyo3 = { git = "https://github.com/pyo3/pyo3", rev = "d8dc3a17bd75d374116df619c749e6777963185f"}
 pyo3-derive-backend = { git = "https://github.com/pyo3/pyo3", rev = "d8dc3a17bd75d374116df619c749e6777963185f" }
-wasm-bindgen-macro-support = { git = "https://github.com/konstin/wasm-bindgen", branch = "reexporting_in_2018" }
-wasm-bindgen-backend = { git = "https://github.com/konstin/wasm-bindgen", branch = "reexporting_in_2018" }
+wasm-bindgen-macro-support = { git = "https://github.com/rustwasm/wasm-bindgen", rev = "30b258515d197fcb9bc3b6e6e5ee50d82c4be2be" }
+wasm-bindgen-backend = { git = "https://github.com/rustwasm/wasm-bindgen", rev = "30b258515d197fcb9bc3b6e6e5ee50d82c4be2be" }
